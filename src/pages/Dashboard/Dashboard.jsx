@@ -1,9 +1,6 @@
 // dashboard.jsx
 import React from "react";
 import "./dashboard.css";
-import Footer from "../ComponentFooter/Footer"
-import Header from "../ComponentHeader/Header"
-import Sidebar from "../ComponentSidebar/Sidebar"
 
 const Dashboard = () => {
   return (
