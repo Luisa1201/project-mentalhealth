@@ -1,6 +1,7 @@
 // dashboard.jsx
 import React from "react";
 import "./dashboard.css";
+import Sidebar from "../../Components/Sidebar";
 
 const Dashboard = () => {
   return (
