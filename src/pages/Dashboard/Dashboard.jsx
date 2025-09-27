@@ -9,7 +9,7 @@ const Dashboard = () => {
         <Header onLogout={onLogout} />
 
 
-      <h2 className="titulo">Resultados generales</h2>
+      <h2 className="titulo">👩‍💻Resultados generales</h2>
 
       {/* Indicadores principales */}
       <div className="indicadores">
