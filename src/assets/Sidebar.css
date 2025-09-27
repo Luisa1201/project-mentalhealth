@@ -1,0 +1,61 @@
+:root {
+  --primary-color: #00b3b3;
+  --secondary-color: #06b6d4;
+  --background-color: #f9fafb;
+  --text-color: #000000;
+  --sidebar-width: 220px;
+  --transition: all 0.3s ease;
+  --font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background:#cde2e2;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 10px;
+  font-family: var(--font-family);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: var(--transition);
+}
+
+.sidebar-logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: var(--secondary-color);
+  text-align: center;
+}
+
+.sidebar-links {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  margin: 15px 0;
+}
+
+.sidebar-links a {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-size: 18px;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.sidebar-links a:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+}
