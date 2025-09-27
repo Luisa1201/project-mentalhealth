@@ -22,7 +22,7 @@ function LoginPage() {
           placeholder="Correo electrónico" 
           required 
         />
-        
+
         <input 
           type="password" 
           placeholder="Contraseña"
@@ -38,7 +38,7 @@ function LoginPage() {
         </p>
 
       <div className="social-login">
-        <p>ó ingresa con</p>
+        <p>O ingresa con</p>
         <div className="social-buttons">
           <button type="button" className="google-btn">
             <FaGoogle className="icon" /> Google
