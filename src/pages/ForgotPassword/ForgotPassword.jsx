@@ -2,6 +2,7 @@ import React from "react";
 import "./ForgotPassword.css";
 
 function ForgotPassword() {
+
   return (
     <div className="forgot-body">
     <div className="forgot-container">
@@ -16,7 +17,7 @@ function ForgotPassword() {
 
       <p className="auth-text">
         <button type="button" className="back-btn" onClick={() => window.location.href = "/loginPage"}>
-          Volver al inicio de sesión
+          😊Volver al inicio de sesión
         </button>
       </p>
     </div>
