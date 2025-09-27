@@ -1,0 +1,176 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.register-body{
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #a8edea, #00b3b3);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 520px; /* más ancho */
+  margin: 70px auto;
+  padding: 60px; /* más espacio interno */
+  background: #ffffff;
+  border-radius: 20px; /* bordes suaves */
+  box-shadow: 0 10px 32px rgba(0, 128, 128, 0.28);
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* ===== TÍTULO ===== */
+.register-container h2 {
+  margin-bottom: 28px;
+  font-size: 30px; /* más grande */
+  font-weight: 700;
+  color: #006d6d;
+}
+
+/* ===== FORMULARIO ===== */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px; /* más espacio */
+}
+
+/* ===== INPUTS ===== */
+.register-form input {
+  padding: 18px 20px; /* más alto */
+  border: 1px solid #a0dcdc;
+  border-radius: 14px;
+  font-size: 17px; /* más grande */
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.register-form input:focus {
+  border-color: #009999;
+  box-shadow: 0 0 8px rgba(0, 153, 153, 0.35);
+}
+
+/* ===== BOTÓN PRINCIPAL ===== */
+.register-form button {
+  padding: 18px;
+  background: linear-gradient(135deg, #00b3b3, #009999);
+  color: #ffffff;
+  font-size: 19px; /* más grande */
+  font-weight: bold;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.register-form button:hover {
+  background: linear-gradient(135deg, #009999, #007a7a);
+  transform: translateY(-2px);
+}
+
+.register-form button:active {
+  transform: scale(0.97);
+}
+
+/* ===== TEXTO INFERIOR ===== */
+.auth-text {
+  margin-top: 30px;
+  font-size: 17px; /* más grande */
+  color: #444;
+}
+
+/* ===== BOTÓN LOGIN (LINK) ===== */
+.login-btn {
+  background: none;
+  border: none;
+  color: #00a3a3;
+  font-size: 17px; /* unificado */
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.login-btn:hover {
+  color: #007777;
+  text-decoration: underline;
+}
+
+/* ===== ANIMACIÓN ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 500px) {
+  .register-container {
+    margin: 40px 20px;
+    padding: 30px;
+    max-width: 95%;
+  }
+
+  .register-container h2 {
+    font-size: 24px;
+  }
+
+  .register-form input {
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .register-form button {
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding: 18px 50px 18px 20px; /* deja espacio a la derecha para el ojito */
+  border: 1px solid #a0dcdc;
+  border-radius: 14px;
+  font-size: 17px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Botón ojito dentro del input */
+.toggle-password {
+  position: absolute;
+  top: 0%;
+  right: 0px;              /* pegado al borde derecho */
+  background: none;         /* sin fondo */
+  border: none;             /* sin borde */
+  cursor: pointer;
+  font-size: 20px;          /* tamaño del ícono */
+  color: #666;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password:hover {
+  color: #000;
+}

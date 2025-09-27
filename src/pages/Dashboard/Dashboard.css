@@ -1,0 +1,138 @@
+/* ---------- GLOBAL (index.css / App.css) ---------- */
+:root {
+  --header-height: 64px; /* ajusta si tu header mide otro alto */
+  --primary-color: #006d6d; /* morado elegante */
+  --secondary-color: #06b6d4; /* cian moderno */
+  --background-color: #f9fafb;
+  --card-bg: #ffffff;
+  --text-color: #000000;
+  --border-radius: 16px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+  --font-family: "Poppins", "Segoe UI", sans-serif;
+   --sidebar-width: 220px;
+}
+
+html, body, #root {
+  height: 100%;
+  /* margin: 0; */
+  padding: 0;
+  box-sizing: border-box;
+  /* overflow-x: hidden; */
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Header */
+.custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 1000;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- DASHBOARD (dashboard.css) ---------- */
+.dashboard-container {
+  flex: 1 0 auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: calc(var(--header-height) + 20px);
+  box-sizing: border-box;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: var(--sidebar-width);
+  
+}
+
+.dashboard-content {
+  display: block;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Secciones */
+.indicadores, .graficos {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 40px;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Cards */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* En móvil */
+@media (max-width: 768px) {
+  .card {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+
+
+/* Gráficos */
+.grafico-linea img,
+.grafico-barras img,
+.grafico-circular img {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  display: block;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin: 20px auto;
+}
+
+/* Titulares */
+h1, h2, h3, h4{
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Espaciado si el header es sticky */
+.custom-header.sticky + .dashboard-container,
+.custom-header + .dashboard-container {
+  padding-top: calc(var(--header-height) + 20px);
+}
+
+.footer {
+  flex-shrink: 0; /* Evita que el footer se comprima */
+}

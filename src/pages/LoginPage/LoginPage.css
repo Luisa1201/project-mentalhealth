@@ -1,0 +1,231 @@
+
+.login-body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #a8edea, #00b3b3);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.welcome-img {
+  width: 130px;
+  height: auto;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.welcome-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 60px auto;
+  padding: 55px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(0, 128, 128, 0.25);
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.login-container h2 {
+  margin-bottom: 28px;
+  font-size: 28px;
+  color: #006d6d;
+  font-weight: 700;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form input {
+  padding: 16px 18px;
+  border: 1px solid #a0dcdc;
+  border-radius: 14px;
+  outline: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+  border-color: #009999;
+  box-shadow: 0 0 6px rgba(0, 153, 153, 0.3);
+}
+
+.login-form button {
+  padding: 16px;
+  background: linear-gradient(135deg, #00b3b3, #009999);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-form button:hover {
+  background: linear-gradient(135deg, #009999, #007a7a);
+  transform: translateY(-2px);
+}
+
+.login-form button:active {
+  transform: scale(0.97);
+}
+
+.forgot-password {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.forgot-link {
+  color: #00a3a3;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+}
+
+.forgot-link:hover {
+  color: #007777;
+}
+
+.auth-text {
+  margin-top: 28px;
+  font-size: 16px;
+  color: #444;
+}
+
+.register-btn {
+  background: none;
+  border: none;
+  color: #00a3a3;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.register-btn:hover {
+  color: #007777;
+  text-decoration: underline;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 500px) {
+  .login-container {
+    margin: 40px 20px;
+    padding: 30px;
+    max-width: 95%;
+  }
+
+  .login-container h2 {
+    font-size: 24px;
+  }
+}
+/* Sección de login social */
+.social-login {
+  text-align: center;
+  margin: 25px 0;
+}
+
+.social-login p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.social-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Iconos */
+.social-buttons button .icon {
+  font-size: 18px;
+}
+
+/* Google */
+.google-btn {
+  background-color: #e2cdcd;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.google-btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+/* GitHub */
+.github-btn {
+  background-color: #24292e;
+  color: #ffffff;
+}
+
+.github-btn:hover {
+  background-color: #1c1f23;
+  transform: translateY(-2px);
+}
+
+/* Facebook */
+.facebook-btn {
+  background-color: #1877f2;
+  color: #ffffff;
+}
+
+.facebook-btn:hover {
+  background-color: #0f5ad1;
+  transform: translateY(-2px);
+}
+

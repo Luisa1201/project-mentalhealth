@@ -1,0 +1,73 @@
+:root {
+  --text-light: #ffffff;
+  --shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  --transition: all 0.3s ease;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #00b3b3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  color: var(--text-light);
+  font-family: "Poppins", "Arial", sans-serif;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+/* Logo */
+.navbar-logo {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.navbar-logo:hover {
+  color: #0e5a5a ;
+}
+
+/* Links */
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li {
+  display: inline;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 16px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.navbar-links a:hover {
+  color: rgb(59, 86, 88);
+  text-decoration: underline;
+}
+.logout-btn {
+  background: none;
+  border: none;
+  color: #00a3a3;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.logout-btn:hover {
+  color: #007777;
+  text-decoration: underline;
+}
