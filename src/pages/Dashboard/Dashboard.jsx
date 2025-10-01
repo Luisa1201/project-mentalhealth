@@ -1,18 +1,15 @@
 // dashboard.jsx
 import React from "react";
 import "./dashboard.css";
-import Footer from "../ComponentFooter/Footer"
-import Header from "../ComponentHeader/Header"
-import Sidebar from "../ComponentSidebar/Sidebar"
+import Sidebar from "../../Components/Sidebar.jsx";
 
 const Dashboard = () => {
   return (
     <div className="dashboard-container">
         <Sidebar/>
-        <Header onLogout={onLogout} />
 
 
-      <h2 className="titulo">Resultados generales</h2>
+      <h2 className="titulo">👩‍💻Resultados generales</h2>
 
       {/* Indicadores principales */}
       <div className="indicadores">
@@ -66,7 +63,6 @@ const Dashboard = () => {
         </div>
       </div>
       
-       <Footer className="footer"/>
     </div>
   );
 };

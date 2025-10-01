@@ -47,6 +47,7 @@ function RegisterForm() {
     }
     try {
       const emaillower = correo.toLocaleLowerCase();
+      
        // Crear usuario para el servicio de authenticación de firebase
       const userMethod = await createUserWithEmailAndPassword(auth, emaillower, password);
       const user = userMethod.user;
