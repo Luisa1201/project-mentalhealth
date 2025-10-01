@@ -2,12 +2,15 @@
 import React from "react";
 import "./dashboard.css";
 import Sidebar from "../../Components/Sidebar.jsx";
+import Header from "../../Components/Header.jsx";
+import Footer from "../../Components/Footer.jsx";
 
 const Dashboard = () => {
   return (
-    <div className="dashboard-container">
-        <Sidebar/>
-
+    <>
+      <Header/>
+      <Sidebar/>
+      <div className="dashboard-container">
 
       <h2 className="titulo">👩‍💻Resultados generales</h2>
 
@@ -63,7 +66,9 @@ const Dashboard = () => {
         </div>
       </div>
       
-    </div>
+      </div>
+      <Footer/>
+    </>
   );
 };
 

@@ -47,12 +47,12 @@ html, body, #root {
   min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: calc(var(--header-height) + 20px);
+  padding-top: 90px; /* Espacio para el Header fixed */
   box-sizing: border-box;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
   margin-left: var(--sidebar-width);
-  
+  padding-bottom: 0;
 }
 
 .dashboard-content {
