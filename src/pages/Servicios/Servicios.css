@@ -1,9 +1,9 @@
 /* HEADER SENCILLO */
 .servicios-header-top {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #cde2e2 0%, #a8d5d5 100%);
+  color: #1a1a1a;
   padding: 2rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 179, 179, 0.15);
   margin-bottom: 2rem;
 }
 
@@ -14,14 +14,14 @@
 }
 
 .header-content h1 {
-  color: white;
+  color: #00b3b3;
   font-size: 2rem;
   margin: 0 0 0.5rem 0;
   font-weight: 600;
 }
 
 .header-content p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #2d2d2d;
   font-size: 1.1rem;
   margin: 0;
 }
@@ -61,7 +61,7 @@
 
 .btn-nuevo {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00b3b3 0%, #06b6d4 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -69,12 +69,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 179, 179, 0.3);
 }
 
 .btn-nuevo:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 12px rgba(0, 179, 179, 0.4);
 }
 
 /* FORMULARIO */
