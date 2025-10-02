@@ -136,3 +136,74 @@ html {
 .footer {
   flex-shrink: 0; /* Evita que el footer se comprima */
 }
+
+/* Sección de Servicios */
+.servicios-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  margin: 30px 0;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.servicios-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.servicios-section h3 {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.servicios-section p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.btn-servicios {
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-servicios:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-servicios:active {
+  transform: scale(0.98);
+}
+
+/* Responsive para sección de servicios */
+@media (max-width: 768px) {
+  .servicios-section {
+    padding: 20px;
+  }
+  
+  .servicios-section h3 {
+    font-size: 1.5rem;
+  }
+  
+  .servicios-section p {
+    font-size: 1rem;
+  }
+  
+  .btn-servicios {
+    width: 100%;
+    padding: 15px;
+  }
+}
