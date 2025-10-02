@@ -10,7 +10,7 @@ import {
   orderBy 
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import "./Servicios.css";
+import "../../assets/ViewModules.css";
 import Swal from "sweetalert2";
 
 function Servicios() {
@@ -394,6 +394,12 @@ function Servicios() {
         )}
       </div>
     </div>
+    {/* BOTÓN VOLVER AL DASHBOARD */}
+      <div className="volver-container">
+        <button className="btn-volver" onClick={() => window.location.href = "/dashboard"}>
+          ⬅️ Volver al Dashboard
+        </button>
+      </div>
     </>
   );
 }

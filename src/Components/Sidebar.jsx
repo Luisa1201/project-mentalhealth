@@ -41,8 +41,15 @@ const Sidebar = () => {
       <aside className={`sidebar ${isOpen ? 'active' : 'collapsed'}`}>
         <div className="sidebar-logo">🧠 Salud Mental</div>
         <ul className="sidebar-links">
-          <li><a href="#frases" onClick={() => isMobile && setIsOpen(false)}>Estudiantes</a></li>
-          <li><a href="#tips" onClick={() => isMobile && setIsOpen(false)}>Psicoorientadores</a></li>
+          <li><a 
+          href="#estudiantes" 
+           onClick={(e) => {
+            e.preventDefault();
+            navigate('/estudiantes'); 
+            isMobile && setIsOpen(false);
+            }}>Estudiantes</a></li>
+            
+          <li><a href="#psicoorientadores" onClick={() => isMobile && setIsOpen(false)}>Psicoorientadores</a></li>
           <li>
             <a 
               href="#servicios" 
