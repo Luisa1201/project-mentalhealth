@@ -1,7 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/Header.css";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="header">
       <div className="header-container">
@@ -18,8 +21,18 @@ const Header = () => {
         </nav>
 
         <div className="header-actions">
-          <button className="btn-secondary">Iniciar Sesión</button>
-          <button className="btn-primary">Registrarse</button>
+          <button 
+            className="btn-secondary"
+            onClick={() => navigate('/loginPage')}
+          >
+            Iniciar Sesión
+          </button>
+          <button 
+            className="btn-primary"
+            onClick={() => navigate('/registerForm')}
+          >
+            Registrarse
+          </button>
         </div>
       </div>
     </header>
