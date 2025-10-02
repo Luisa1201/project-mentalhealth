@@ -80,10 +80,10 @@ const Dashboard = () => {
             <FaArrowRight className="action-arrow" />
           </button>
 
-          <button className="action-card action-blue">
+          <button className="action-card action-blue" onClick={() => navigate('/estudiantes')}>
             <div className="action-icon">👥</div>
-            <h3>Ver Usuarios</h3>
-            <p>Lista de usuarios registrados</p>
+            <h3>Ver Estudiantes</h3>
+            <p>Lista de estudiantes registrados</p>
             <FaArrowRight className="action-arrow" />
           </button>
 
