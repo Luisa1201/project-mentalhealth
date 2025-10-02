@@ -362,6 +362,12 @@ function Estudiantes() {
           )}
         </div>
       </div>
+      {/* BOTÓN VOLVER AL DASHBOARD */}
+      <div className="volver-container">
+        <button className="btn-volver" onClick={() => window.location.href = "/dashboard"}>
+          ⬅️ Volver al Dashboard
+        </button>
+      </div>
     </>
   );
 }
