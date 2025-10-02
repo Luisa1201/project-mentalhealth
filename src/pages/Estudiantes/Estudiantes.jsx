@@ -25,6 +25,7 @@ function Estudiantes() {
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
+    fechaNacimiento: "",
     edad: "",
     grado: "",
     correo: "",
@@ -183,6 +184,7 @@ function Estudiantes() {
       title: `${est.nombre} ${est.apellido}`,
       html: `
         <div style="text-align: left;">
+        <p><strong>Fecha de Nacimiento:</strong> ${est.fechaNacimiento || "No registrada"}</p>
           <p><strong>Edad:</strong> ${est.edad}</p>
           <p><strong>Grado:</strong> ${est.grado}</p>
           <p><strong>Correo:</strong> ${est.correo}</p>
@@ -252,21 +254,28 @@ function Estudiantes() {
                 </div>
               </div>
 
-              <div className="form-row">
+               <div className="form-row">
+                <div className="form-group">
+                  <label>Fecha de Nacimiento *</label>
+                  <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleChange} required />
+                </div>
                 <div className="form-group">
                   <label>Edad *</label>
                   <input type="number" name="edad" value={formData.edad} onChange={handleChange} required />
                 </div>
+              </div>
+
+              <div className="form-row">
                 <div className="form-group">
                   <label>Grado *</label>
                   <input type="text" name="grado" value={formData.grado} onChange={handleChange} required />
                 </div>
-              </div>
-
-              <div className="form-group">
+                <div className="form-group">
                 <label>Correo *</label>
                 <input type="email" name="correo" value={formData.correo} onChange={handleChange} required />
               </div>
+              </div>
+              
 
               <div className="form-row">
                 <div className="form-group">
@@ -329,6 +338,7 @@ function Estudiantes() {
                   <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Fecha Nacimiento</th>
                     <th>Edad</th>
                     <th>Grado</th>
                     <th>Correo</th>
@@ -341,6 +351,7 @@ function Estudiantes() {
                     <tr key={est.id}>
                       <td>{est.nombre}</td>
                       <td>{est.apellido}</td>
+                      <td>{est.fechaNacimiento || "No registrada"}</td>
                       <td>{est.edad}</td>
                       <td>{est.grado}</td>
                       <td>{est.correo}</td>
@@ -362,12 +373,14 @@ function Estudiantes() {
           )}
         </div>
       </div>
+      
       {/* BOTÓN VOLVER AL DASHBOARD */}
       <div className="volver-container">
         <button className="btn-volver" onClick={() => window.location.href = "/dashboard"}>
           ⬅️ Volver al Dashboard
         </button>
       </div>
+
     </>
   );
 }
