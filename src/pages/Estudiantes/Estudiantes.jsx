@@ -112,6 +112,65 @@ function Estudiantes() {
     }
   };
 
+  // UPDATE
+  const actualizarEstudiante = async (e) => {
+    e.preventDefault();
+
+    try {
+      const estudianteRef = doc(db, "estudiantes", editando);
+      await updateDoc(estudianteRef, formData);
+
+      Swal.fire("Actualizado", "Estudiante actualizado correctamente", "success");
+      cancelarForm();
+      cargarEstudiantes();
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      Swal.fire("Error", "No se pudo actualizar el estudiante", "error");
+    }
+  };
+
+
+  // Editar
+  const iniciarEdicion = (est) => {
+    setEditando(est.id);
+    setFormData({ ...est });
+    setShowForm(true);
+  };
+
+  const cancelarForm = () => {
+    setShowForm(false);
+    setEditando(null);
+    setFormData({
+      nombre: "",
+      apellido: "",
+      edad: "",
+      grado: "",
+      correo: "",
+      telefono: "",
+      acudiente: "",
+      telefonoAcudiente: "",
+      estado: "Activo"
+    });
+  };
+
+  // Ver detalles
+  const verDetalles = (est) => {
+    Swal.fire({
+      title: `${est.nombre} ${est.apellido}`,
+      html: `
+        <div style="text-align: left;">
+          <p><strong>Edad:</strong> ${est.edad}</p>
+          <p><strong>Grado:</strong> ${est.grado}</p>
+          <p><strong>Correo:</strong> ${est.correo}</p>
+          <p><strong>Teléfono:</strong> ${est.telefono}</p>
+          <p><strong>Acudiente:</strong> ${est.acudiente} (${est.telefonoAcudiente})</p>
+          <p><strong>Estado:</strong> ${est.estado}</p>
+        </div>
+      `,
+      icon: "info",
+      confirmButtonText: "Cerrar"
+    });
+  };
 
   return (
     <>
