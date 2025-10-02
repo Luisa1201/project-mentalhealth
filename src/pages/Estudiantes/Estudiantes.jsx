@@ -42,7 +42,76 @@ function Estudiantes() {
     });
   };
 
-  
+  // READ - cargar estudiantes
+  const cargarEstudiantes = async () => {
+    try {
+      setLoading(true);
+      const q = query(collection(db, "estudiantes"), orderBy("creado", "desc"));
+      const querySnapshot = await getDocs(q);
+      const estudiantesArray = [];
+      
+      querySnapshot.forEach((doc) => {
+        estudiantesArray.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      setEstudiantes(estudiantesArray);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cargar estudiantes:", error);
+      Swal.fire("Error", "No se pudieron cargar los estudiantes", "error");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarEstudiantes();
+  }, []);
+
+  // Filtrar y buscar
+  useEffect(() => {
+    let resultado = estudiantes;
+
+    if (searchTerm) {
+      resultado = resultado.filter(est =>
+        est.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        est.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        est.correo.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (filtroEstado !== "Todos") {
+      resultado = resultado.filter(est => est.estado === filtroEstado);
+    }
+
+    setEstudiantesFiltrados(resultado);
+  }, [estudiantes, searchTerm, filtroEstado]);
+
+  // CREATE - nuevo estudiante
+  const crearEstudiante = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.nombre || !formData.apellido || !formData.edad || !formData.grado || !formData.correo) {
+      return Swal.fire("Error", "Todos los campos obligatorios deben llenarse", "error");
+    }
+
+    try {
+      await addDoc(collection(db, "estudiantes"), {
+        ...formData,
+        creado: new Date()
+      });
+
+      Swal.fire("Creado", "Estudiante registrado exitosamente", "success");
+      cancelarForm();
+      cargarEstudiantes();
+    } catch (error) {
+      console.error("Error al crear estudiante:", error);
+      Swal.fire("Error", "No se pudo registrar el estudiante", "error");
+    }
+  };
+
 
   return (
     <>
