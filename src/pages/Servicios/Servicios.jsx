@@ -15,7 +15,10 @@ import Swal from "sweetalert2";
 
 function Servicios() {
   const [servicios, setServicios] = useState([]);
+  const [serviciosFiltrados, setServiciosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("Todos");
 
   const [showForm, setShowForm] = useState(false);
   const [editando, setEditando] = useState(null);
@@ -63,6 +66,26 @@ function Servicios() {
   useEffect(() => {
     cargarServicios();
   }, []);
+
+  // Filtrar y buscar servicios
+  useEffect(() => {
+    let resultado = servicios;
+
+    // Filtrar por búsqueda
+    if (searchTerm) {
+      resultado = resultado.filter(servicio =>
+        servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        servicio.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filtrar por estado
+    if (filtroEstado !== "Todos") {
+      resultado = resultado.filter(servicio => servicio.estado === filtroEstado);
+    }
+
+    setServiciosFiltrados(resultado);
+  }, [servicios, searchTerm, filtroEstado]);
 
   // CREATE - Crear nuevo servicio en Firebase
   const crearServicio = async (e) => {
@@ -184,14 +207,35 @@ function Servicios() {
       </header>
 
       <div className="servicios-container">
-        <div className="servicios-actions">
-        <button 
-          className="btn-nuevo"
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? "❌ Cancelar" : "➕ Nuevo Servicio"}
-        </button>
-      </div>
+        {/* BARRA DE BÚSQUEDA Y FILTROS */}
+        <div className="search-filter-container">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="🔍 Buscar por nombre o descripción..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+          <div className="filter-box">
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="filter-select"
+            >
+              <option value="Todos">Todos los estados</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+          <button 
+            className="btn-nuevo"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "❌ Cancelar" : "➕ Nuevo Servicio"}
+          </button>
+        </div>
 
       {/* FORMULARIO CREATE/UPDATE */}
       {showForm && (
@@ -277,16 +321,22 @@ function Servicios() {
 
       {/* TABLA READ */}
       <div className="servicios-list">
-        <h2>📋 Lista de Servicios ({servicios.length})</h2>
+        <h2>📋 Lista de Servicios ({serviciosFiltrados.length} de {servicios.length})</h2>
         
         {loading ? (
           <div className="loading-state">
-            <p>⏳ Cargando servicios...</p>
+            <div className="spinner"></div>
+            <p>Cargando servicios...</p>
           </div>
         ) : servicios.length === 0 ? (
           <div className="empty-state">
             <p>📭 No hay servicios registrados</p>
             <p>Haz clic en "Nuevo Servicio" para agregar uno</p>
+          </div>
+        ) : serviciosFiltrados.length === 0 ? (
+          <div className="empty-state">
+            <p>🔍 No se encontraron resultados</p>
+            <p>Intenta con otros términos de búsqueda</p>
           </div>
         ) : (
           <div className="table-container">
@@ -302,7 +352,7 @@ function Servicios() {
                 </tr>
               </thead>
               <tbody>
-                {servicios.map((servicio) => (
+                {serviciosFiltrados.map((servicio) => (
                   <tr key={servicio.id}>
                     <td className="td-nombre">{servicio.nombre}</td>
                     <td className="td-descripcion">{servicio.descripcion}</td>
