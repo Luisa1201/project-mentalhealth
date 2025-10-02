@@ -5,6 +5,7 @@ import RegisterForm from "./pages/RegisterForm/RegisterForm";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Servicios from "./pages/Servicios/Servicios";
+import Estudiantes from "./pages/Estudiantes/Estudiantes";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
     <Route path='/forgotPassword' element={<ForgotPassword/>}></Route>
     <Route path='/dashboard' element={<Dashboard/>}></Route>
     <Route path='/servicios' element={<Servicios/>}></Route>
+     <Route path='/estudiantes' element={<Estudiantes/>}></Route>
    </Routes>
    </BrowserRouter>
   );
