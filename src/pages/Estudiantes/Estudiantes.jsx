@@ -129,6 +129,30 @@ function Estudiantes() {
     }
   };
 
+  // DELETE
+  const eliminarEstudiante = async (id, nombre) => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: `Se eliminará el estudiante: ${nombre}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteDoc(doc(db, "estudiantes", id));
+        Swal.fire("Eliminado", "Estudiante eliminado correctamente", "success");
+        cargarEstudiantes();
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        Swal.fire("Error", "No se pudo eliminar el estudiante", "error");
+      }
+    }
+  };
 
   // Editar
   const iniciarEdicion = (est) => {
