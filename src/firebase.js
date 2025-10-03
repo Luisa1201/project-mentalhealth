@@ -9,6 +9,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
 const firebaseConfig = {
   apiKey: "AIzaSyAM0stCkI4ZhAyuW0Sv5aD48RJAkNqvHZ8",
   authDomain: "projectmentalhealth-b13c9.firebaseapp.com",
@@ -19,7 +20,7 @@ const firebaseConfig = {
   measurementId: "G-QPVFQJD2Y4"
 };
 
-// Initialize Firebase
+// Inicializa el Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 ;//variable para obtener funcionalidad de autenticación
