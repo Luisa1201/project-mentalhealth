@@ -109,7 +109,48 @@ function Psicoorientadores() {
     }
   };
 
+ // UPDATE
+  const actualizarPsico = async (e) => {
+    e.preventDefault();
 
+    try {
+      const psicoRef = doc(db, "psicoorientadores", editando);
+      await updateDoc(psicoRef, formData);
+
+      Swal.fire("Actualizado", "Psicoorientador actualizado correctamente", "success");
+      cancelarForm();
+      cargarPsicos();
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      Swal.fire("Error", "No se pudo actualizar", "error");
+    }
+  };
+
+  // DELETE
+  const eliminarPsico = async (id, nombre) => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: `Se eliminará el psicoorientador: ${nombre}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteDoc(doc(db, "psicoorientadores", id));
+        Swal.fire("Eliminado", "Psicoorientador eliminado correctamente", "success");
+        cargarPsicos();
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        Swal.fire("Error", "No se pudo eliminar", "error");
+      }
+    }
+  };
+  
 // Editar
   const iniciarEdicion = (ps) => {
     setEditando(ps.id);
@@ -129,7 +170,7 @@ function Psicoorientadores() {
       estado: "Activo"
     });
   };
-  
+
   // Ver detalles
   const verDetalles = (ps) => {
     Swal.fire({
