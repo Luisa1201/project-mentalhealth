@@ -6,6 +6,7 @@ import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Servicios from "./pages/Servicios/Servicios";
 import Estudiantes from "./pages/Estudiantes/Estudiantes";
+import Psicoorientadores from "./pages/Psicoorientador/Psicoorientador";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
     <Route path='/dashboard' element={<Dashboard/>}></Route>
     <Route path='/servicios' element={<Servicios/>}></Route>
      <Route path='/estudiantes' element={<Estudiantes/>}></Route>
+     <Route path="/psicoorientadores" element={<Psicoorientadores/>}></Route>
    </Routes>
    </BrowserRouter>
   );

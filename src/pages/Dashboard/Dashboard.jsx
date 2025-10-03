@@ -87,7 +87,7 @@ const Dashboard = () => {
             <FaArrowRight className="action-arrow" />
           </button>
 
-          <button className="action-card action-green">
+          <button className="action-card action-green" onClick={() => navigate('/psicoorientadores')}>
             <div className="action-icon">👨‍⚕️</div>
             <h3>Ver Psicoorientadores</h3>
             <p>Profesionales de salud mental</p>

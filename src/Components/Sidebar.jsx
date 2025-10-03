@@ -49,7 +49,12 @@ const Sidebar = () => {
             isMobile && setIsOpen(false);
             }}>Estudiantes</a></li>
             
-          <li><a href="#psicoorientadores" onClick={() => isMobile && setIsOpen(false)}>Psicoorientadores</a></li>
+          <li><a 
+          href="#psicoorientador" onClick={(e) => {
+            e.preventDefault();
+            navigate('/psicoorientadores');
+            isMobile && setIsOpen(false);
+          }}>Psicoorientadores</a></li>
           <li>
             <a 
               href="#servicios" 
@@ -57,11 +62,7 @@ const Sidebar = () => {
                 e.preventDefault();
                 navigate('/servicios');
                 isMobile && setIsOpen(false);
-              }}
-            >
-              Servicios
-            </a>
-          </li>
+              }}>Servicios</a></li>
         </ul>
       </aside>
     </>
