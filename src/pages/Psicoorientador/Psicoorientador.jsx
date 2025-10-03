@@ -39,7 +39,7 @@ function Psicoorientadores() {
     });
   };
 
-  // READ - cargar psicoorientadores
+  // READ - cargar psicoorientadores2
   const cargarPsicos = async () => {
     try {
       setLoading(true);
