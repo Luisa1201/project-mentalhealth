@@ -110,7 +110,26 @@ function Psicoorientadores() {
   };
 
 
+// Editar
+  const iniciarEdicion = (ps) => {
+    setEditando(ps.id);
+    setFormData({ ...ps });
+    setShowForm(true);
+  };
 
+  const cancelarForm = () => {
+    setShowForm(false);
+    setEditando(null);
+    setFormData({
+      nombre: "",
+      especialidad: "",
+      correo: "",
+      telefono: "",
+      disponibilidad: "",
+      estado: "Activo"
+    });
+  };
+  
   // Ver detalles
   const verDetalles = (ps) => {
     Swal.fire({
