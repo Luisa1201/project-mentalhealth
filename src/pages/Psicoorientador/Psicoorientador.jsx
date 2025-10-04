@@ -18,7 +18,7 @@ function Psicoorientadores() {
   const [psicosFiltrados, setPsicosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("Todos");
+  const [filtroEstado, setFiltroEstado] =  useState("Todos");
 
   const [showForm, setShowForm] = useState(false);
   const [editando, setEditando] = useState(null);
