@@ -1,5 +1,5 @@
 /* ===== CONTENEDOR PRINCIPAL ===== */
-.forgot-body{
+.reset-body {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,13 +16,14 @@
   overflow-y: auto;
   z-index: 1000;
 }
-.forgot-container {
+
+.reset-container {
   width: 100%;
-  max-width: 520px; /* un poco más ancho */
+  max-width: 520px;
   margin: 70px auto;
   padding: 60px;
   background: #ffffff;
-  border-radius: 20px; /* bordes un poco más suaves */
+  border-radius: 20px;
   box-shadow: 0 10px 32px rgba(0, 128, 128, 0.28);
   text-align: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -30,49 +31,49 @@
 }
 
 /* ===== TÍTULO ===== */
-.forgot-container h2 {
+.reset-container h2 {
   margin-bottom: 25px;
-  font-size: 30px;   
+  font-size: 30px;
   font-weight: 700;
   color: #006d6d;
 }
 
 /* ===== TEXTO INFORMATIVO ===== */
-.forgot-text {
-  font-size: 18px; /* más grande */
+.reset-text {
+  font-size: 18px;
   color: #444;
   margin-bottom: 32px;
   line-height: 1.6;
 }
 
 /* ===== FORMULARIO ===== */
-.forgot-form {
+.reset-form {
   display: flex;
   flex-direction: column;
-  gap: 22px; /* más espacio */
+  gap: 22px;
 }
 
 /* ===== INPUT ===== */
-.forgot-form input {
-  padding: 18px 20px;  /* más alto */
+.reset-form input {
+  padding: 18px 20px;
   border: 1px solid #a0dcdc;
   border-radius: 14px;
-  font-size: 17px; /* más grande */
+  font-size: 17px;
   outline: none;
   transition: all 0.3s ease;
 }
 
-.forgot-form input:focus {
+.reset-form input:focus {
   border-color: #009999;
   box-shadow: 0 0 8px rgba(0, 153, 153, 0.35);
 }
 
 /* ===== BOTÓN PRINCIPAL ===== */
-.forgot-form button {
-  padding: 18px;  /* más alto */
+.reset-form button {
+  padding: 18px;
   background: linear-gradient(135deg, #00b3b3, #009999);
   color: #ffffff;
-  font-size: 19px; /* más grande */
+  font-size: 19px;
   font-weight: bold;
   border: none;
   border-radius: 16px;
@@ -80,16 +81,16 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.forgot-form button:hover:not(:disabled) {
+.reset-form button:hover:not(:disabled) {
   background: linear-gradient(135deg, #009999, #007a7a);
   transform: translateY(-2px);
 }
 
-.forgot-form button:active:not(:disabled) {
+.reset-form button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-.forgot-form button:disabled {
+.reset-form button:disabled {
   background: linear-gradient(135deg, #a0dcdc, #8cc9c9);
   cursor: not-allowed;
   opacity: 0.7;
@@ -98,7 +99,7 @@
 /* ===== TEXTO VOLVER ===== */
 .auth-text {
   margin-top: 30px;
-  font-size: 17px; /* más grande */
+  font-size: 17px;
   color: #444;
 }
 
@@ -107,7 +108,7 @@
   background: none;
   border: none;
   color: #00a3a3;
-  font-size: 17px; /* unificado */
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -132,17 +133,22 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 500px) {
-  .forgot-container {
+  .reset-container {
     margin: 40px 20px;
     padding: 30px;
     max-width: 95%;
   }
 
-  .forgot-container h2 {
+  .reset-container h2 {
     font-size: 24px;
   }
 
-  .forgot-text {
+  .reset-text {
+    font-size: 15px;
+  }
+
+  .reset-form input,
+  .reset-form button {
     font-size: 15px;
   }
 }
