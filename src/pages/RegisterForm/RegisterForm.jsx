@@ -12,9 +12,14 @@ function RegisterForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false); //Indica si algo está cargando (true) o no está cargando (false).
 
   const [formData, setFormData] = useState({
-    nombres: "", correo:"", password: "", confirmPassword: ""
+    nombres: "", 
+    correo:"", 
+    password: "", 
+    confirmPassword: ""
 
   });
 
@@ -25,51 +30,87 @@ function RegisterForm() {
     });
   };
 
+  // Validar formato de email
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const {
        nombres, correo, password, confirmPassword
     } = formData;
 
-    // Validaciones
-    if(
-      !nombres || !correo || !password || !confirmPassword
-    ){
-      return Swal.fire("Todos los campos son obligatorios");
+       // Validaciones
+    if (!nombres || !correo || !password || !confirmPassword) {
+      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      setLoading(false);
+      return;
     }
-    if(password.length < 6){
-      return Swal.fire("la contraseña debe tener al menos 6 caracteres");
+
+    if (nombres.trim().length < 3) {
+      Swal.fire("Error", "El nombre debe tener al menos 3 caracteres", "error");
+      setLoading(false);
+      return;
+    }
+
+    if (!isValidEmail(correo)) {
+      Swal.fire("Error", "Por favor ingresa un correo válido", "error");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Swal.fire("Error", "Las contraseñas no coinciden", "error");
+      setLoading(false);
+      return;
+    }
     
-    }
-    if(password !== confirmPassword){
-      return Swal.fire("las contraseñas no son iguales");
-    }
     try {
-      const emaillower = correo.toLocaleLowerCase();
+      const emaillower = correo.toLowerCase();
       
        // Crear usuario para el servicio de authenticación de firebase
-      const userMethod = await createUserWithEmailAndPassword(auth, emaillower, password);
-      const user = userMethod.user;
+      const userCredential = await createUserWithEmailAndPassword(auth, emaillower, password);
+      const user = userCredential.user;
 
       //Guardar datos en firebase
       await setDoc (doc(db, "usuarios", user.uid),{
         uid: user.uid,
-        nombres, correo: emaillower, password, confirmPassword, estado: "pendiente", 
-        rol: "visitante", creado: new Date(), metodo: "password"
+        nombres: nombres.trim(), 
+        correo: emaillower, 
+        estado: "pendiente", 
+        rol: "visitante", 
+        creado: new Date(), 
+        metodo: "email"
       });
 
       Swal.fire("Registrado", "Usuario creado con éxito", "success");
-      navigate("/")
+      navigate("/loginPage")
     }catch (error){
       console.error("Error de registro", error);
 
-      if(error.code === "auth/email-already-in-use"){
-        Swal.fire("Correo en uso", "Debe ingresar error", "error");
+      if (error.code === "auth/email-already-in-use") {
+        Swal.fire("Error", "Este correo ya está registrado", "error");
+      } else if (error.code === "auth/weak-password") {
+        Swal.fire("Error", "La contraseña es muy débil", "error");
+      } else if (error.code === "auth/invalid-email") {
+        Swal.fire("Error", "El correo no es válido", "error");
+      } else {
+        Swal.fire("Error", "Error al registrar el usuario. Intenta de nuevo", "error");
       }
-
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="register-body">
@@ -86,13 +127,14 @@ function RegisterForm() {
 
         <input type="email" 
         name="correo" 
-        placeholder="correos" 
+        placeholder="Correo electrónico"  
         required 
         value={formData.correo} 
         onChange={handleChange} />
 
         <div className="password-container">
-        <input type={showPassword ? "text" :"password"}
+        <input 
+        type={showPassword ? "text" :"password"}
         name="password"
         placeholder="Mínimo 6 caracteres de password" 
         required 
@@ -109,7 +151,7 @@ function RegisterForm() {
         </div>
 
       <div className="password-container">
-        <input type={showPassword ? "text" :"password"} 
+        <input type={showConfirmPassword ? "text" :"password"} 
         name="confirmPassword" 
         placeholder="confirmPassword" 
         required 
@@ -119,20 +161,26 @@ function RegisterForm() {
          <button
           type="button"
           className="toggle-password"
-          onClick={() => setShowPassword(!showPassword)}>
-          {showPassword ? <FaEyeSlash/>: <FaEye/>}
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+          {showConfirmPassword ? <FaEyeSlash/>: <FaEye/>}
         </button>
 
         </div>
 
-        <button type="submit">Crear cuenta</button>
+        <button type="submit" disabled={loading}>
+            {loading ? "Registrando..." : "Crear cuenta"}
+          </button>
       </form>
-      <p className="auth-text">
-        ¿Ya tienes cuenta?{" "}
-        <button type="button" className="login-btn" onClick={() => window.location.href = "/loginPage"}>
-          Inicia sesión
-        </button>
-      </p>
+       <p className="auth-text">
+          ¿Ya tienes cuenta?{" "}
+          <button 
+            type="button" 
+            className="login-btn" 
+            onClick={() => navigate("/loginPage")}
+          >
+            Inicia sesión
+          </button>
+        </p>
     </div>
     </div>
   );
