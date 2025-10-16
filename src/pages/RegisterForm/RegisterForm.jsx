@@ -3,10 +3,10 @@ import { Link, useNavigate} from "react-router-dom"
 import "./RegisterForm.css";
 import "../LoginPage/LoginPage.css"
 import Swal from "sweetalert2";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase";
-import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, db, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
+import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from "react-icons/fa"
 
 function RegisterForm() {
   const navigate = useNavigate();
@@ -112,6 +112,69 @@ function RegisterForm() {
     }
   };
 
+  const handleSocialRegister = async (provider, providerName) => {
+    setLoading(true);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Verificar si el usuario ya existe en Firestore
+      const userDocRef = doc(db, "usuarios", user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        // Si es un usuario nuevo, guardar sus datos
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          nombres: user.displayName || `Usuario de ${providerName}`,
+          correo: user.email,
+          estado: "pendiente",
+          rol: "visitante",
+          creado: new Date(),
+          metodo: providerName.toLowerCase(),
+          photoURL: user.photoURL || null
+        });
+        
+        Swal.fire({
+          icon: "success",
+          title: "¡Registro exitoso!",
+          text: `Bienvenido ${user.displayName || user.email}`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        // Si ya existe, solo iniciar sesión
+        Swal.fire({
+          icon: "success",
+          title: "¡Bienvenido de nuevo!",
+          text: `Sesión iniciada como ${user.displayName || user.email}`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+      
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(`Error al registrarse con ${providerName}:`, error);
+      
+      if (error.code === "auth/popup-closed-by-user") {
+        Swal.fire("Cancelado", "Cerraste la ventana de registro", "info");
+      } else if (error.code === "auth/popup-blocked") {
+        Swal.fire("Error", "El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes", "error");
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        Swal.fire("Error", "Ya existe una cuenta con este correo usando otro método de registro", "error");
+      } else {
+        Swal.fire("Error", `No se pudo registrar con ${providerName}. Intenta de nuevo`, "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = () => handleSocialRegister(GoogleProvider, "Google");
+  const handleGithubRegister = () => handleSocialRegister(GithubProvider, "GitHub");
+  const handleFacebookRegister = () => handleSocialRegister(FacebookProvider, "Facebook");
+
   return (
     <div className="register-body">
     <div className="register-container">
@@ -171,6 +234,37 @@ function RegisterForm() {
             {loading ? "Registrando..." : "Crear cuenta"}
           </button>
       </form>
+
+      <div className="social-login">
+        <p>O regístrate con</p>
+        <div className="social-buttons">
+          <button 
+            type="button" 
+            className="google-btn"
+            onClick={handleGoogleRegister}
+            disabled={loading}
+          >
+            <FaGoogle className="icon" /> Google
+          </button>
+          <button 
+            type="button" 
+            className="github-btn"
+            onClick={handleGithubRegister}
+            disabled={loading}
+          >
+            <FaGithub className="icon" /> GitHub
+          </button>
+          <button 
+            type="button" 
+            className="facebook-btn"
+            onClick={handleFacebookRegister}
+            disabled={loading}
+          >
+            <FaFacebook className="icon" /> Facebook
+          </button>
+        </div>
+      </div>
+
        <p className="auth-text">
           ¿Ya tienes cuenta?{" "}
           <button 
