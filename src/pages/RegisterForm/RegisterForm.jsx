@@ -120,7 +120,7 @@ function RegisterForm() {
         
         <input type="text" 
         name="nombres" 
-        placeholder="nombres" 
+        placeholder="Nombres" 
         required 
         value={formData.nombres} 
         onChange={handleChange}/>
@@ -153,7 +153,7 @@ function RegisterForm() {
       <div className="password-container">
         <input type={showConfirmPassword ? "text" :"password"} 
         name="confirmPassword" 
-        placeholder="confirmPassword" 
+        placeholder="Confirmar Contraseña" 
         required 
         value={formData.confirmPassword} 
         onChange={handleChange}/>
