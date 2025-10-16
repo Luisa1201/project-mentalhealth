@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./LoginPage.css";
 import Swal from "sweetalert2";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -64,6 +64,42 @@ function LoginPage() {
     }
 };
 
+  const handleSocialLogin = async (provider, providerName) => {
+    setLoading(true);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      Swal.fire({
+        icon: "success",
+        title: "¡Bienvenido!",
+        text: `Sesión iniciada con ${providerName} como ${user.displayName || user.email}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(`Error al iniciar sesión con ${providerName}:`, error);
+      
+      if (error.code === "auth/popup-closed-by-user") {
+        Swal.fire("Cancelado", "Cerraste la ventana de inicio de sesión", "info");
+      } else if (error.code === "auth/popup-blocked") {
+        Swal.fire("Error", "El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes", "error");
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        Swal.fire("Error", "Ya existe una cuenta con este correo usando otro método de inicio de sesión", "error");
+      } else {
+        Swal.fire("Error", `No se pudo iniciar sesión con ${providerName}. Intenta de nuevo`, "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => handleSocialLogin(GoogleProvider, "Google");
+  const handleGithubLogin = () => handleSocialLogin(GithubProvider, "GitHub");
+  const handleFacebookLogin = () => handleSocialLogin(FacebookProvider, "Facebook");
+
   return (
     <div className="login-body">
     <div className="login-container">
@@ -119,13 +155,28 @@ function LoginPage() {
       <div className="social-login">
         <p>O ingresa con</p>
         <div className="social-buttons">
-          <button type="button" className="google-btn">
+          <button 
+            type="button" 
+            className="google-btn"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+          >
             <FaGoogle className="icon" /> Google
           </button>
-          <button type="button" className="github-btn">
+          <button 
+            type="button" 
+            className="github-btn"
+            onClick={handleGithubLogin}
+            disabled={loading}
+          >
             <FaGithub className="icon" /> GitHub
           </button>
-          <button type="button" className="facebook-btn">
+          <button 
+            type="button" 
+            className="facebook-btn"
+            onClick={handleFacebookLogin}
+            disabled={loading}
+          >
             <FaFacebook className="icon" /> Facebook
           </button>
         </div>
