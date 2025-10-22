@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Servicios from "./pages/Servicios/Servicios";
 import Estudiantes from "./pages/Estudiantes/Estudiantes";
 import Psicoorientadores from "./pages/Psicoorientador/Psicoorientador";
+import SessionHistory from "./pages/SessionHistory/SessionHistory";
+import AdminRoute from "./Components/AdminRoute";
 
 function App() {
 
@@ -23,6 +25,11 @@ function App() {
     <Route path='/servicios' element={<Servicios/>}></Route>
      <Route path='/estudiantes' element={<Estudiantes/>}></Route>
      <Route path="/psicoorientadores" element={<Psicoorientadores/>}></Route>
+     <Route path="/session-history" element={
+       <AdminRoute>
+         <SessionHistory/>
+       </AdminRoute>
+     }></Route>
    </Routes>
    </BrowserRouter>
   );

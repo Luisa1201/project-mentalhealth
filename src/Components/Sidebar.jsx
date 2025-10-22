@@ -63,6 +63,14 @@ const Sidebar = () => {
                 navigate('/servicios');
                 isMobile && setIsOpen(false);
               }}>Servicios</a></li>
+          <li>
+            <a 
+              href="#session-history" 
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/session-history');
+                isMobile && setIsOpen(false);
+              }}>Historial de Sesiones</a></li>
         </ul>
       </aside>
     </>

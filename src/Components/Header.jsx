@@ -5,6 +5,7 @@ import "../assets/Header.css";
 import { auth, db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
+import { registerLogout } from "../utils/sessionManager";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
+      // Registrar cierre de sesión antes de cerrar
+      await registerLogout();
+      
       await auth.signOut();
       Swal.fire("Éxito", "Sesión cerrada correctamente", "success");
       navigate("/loginPage");
