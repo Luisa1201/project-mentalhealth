@@ -74,7 +74,7 @@ function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Registrar inicio de sesión con el proveedor social
+      // Registrar inicio de sesión con el proveedor
       await registerLogin(user, providerName);
       
       Swal.fire({
