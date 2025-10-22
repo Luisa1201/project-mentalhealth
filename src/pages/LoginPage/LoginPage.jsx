@@ -5,6 +5,7 @@ import "./LoginPage.css";
 import Swal from "sweetalert2";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
+import { registerLogin, getAuthProvider } from "../../utils/sessionManager";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -43,6 +44,9 @@ function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, emailLower, password);
       const user = userCredential.user;
 
+      // Registrar inicio de sesión
+      await registerLogin(user, "Email");
+
       Swal.fire("Éxito", "Sesión iniciada correctamente", "success");
       navigate("/dashboard");
     } catch (error) {
@@ -69,6 +73,9 @@ function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      
+      // Registrar inicio de sesión con el proveedor social
+      await registerLogin(user, providerName);
       
       Swal.fire({
         icon: "success",

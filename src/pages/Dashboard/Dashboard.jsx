@@ -1,7 +1,7 @@
 // dashboard.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUsers, FaHeart, FaCalendarCheck, FaStar, FaArrowRight, FaChartLine, FaUserPlus, FaCog } from "react-icons/fa";
+import { FaUsers, FaHeart, FaCalendarCheck, FaStar, FaArrowRight, FaChartLine, FaUserPlus, FaCog, FaHistory } from "react-icons/fa";
 import "./dashboard.css";
 import Sidebar from "../../Components/Sidebar.jsx";
 import Header from "../../Components/Header.jsx";
@@ -91,6 +91,13 @@ const Dashboard = () => {
             <div className="action-icon">👨‍⚕️</div>
             <h3>Ver Psicoorientadores</h3>
             <p>Profesionales de salud mental</p>
+            <FaArrowRight className="action-arrow" />
+          </button>
+
+          <button className="action-card action-orange" onClick={() => navigate('/session-history')}>
+            <div className="action-icon"><FaHistory /></div>
+            <h3>Historial de Sesiones</h3>
+            <p>Registro de inicios y cierres de sesión</p>
             <FaArrowRight className="action-arrow" />
           </button>
         </div>
