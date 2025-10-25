@@ -176,7 +176,7 @@ function LoginPage() {
             onClick={handleGithubLogin}
             disabled={loading}
           >
-            <FaGithub className="icon" />  GitHub
+            <FaGithub className="icon" /> GitHub
           </button>
           <button 
              type="button" 
@@ -184,7 +184,8 @@ function LoginPage() {
              onClick={handleFacebookLogin}
              disabled={loading}
           >
-            <FaFacebook className="icon" /> Facebook
+            
+            <FaFacebook className="icon" /> Facebook 
           </button>
         </div>
       </div>
