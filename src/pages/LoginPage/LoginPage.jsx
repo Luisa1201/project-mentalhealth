@@ -171,8 +171,8 @@ function LoginPage() {
             <FaGoogle className="icon" /> Google
           </button>
           <button 
-            type="button"  //Boton de GitHub
-            className="github-btn"
+            type="button"  // Boton de GitHub
+            className="github-btn" // Clase CSS para el botón de GitHub
             onClick={handleGithubLogin}
             disabled={loading}
           >
