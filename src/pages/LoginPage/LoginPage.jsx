@@ -179,7 +179,7 @@ function LoginPage() {
             <FaGithub className="icon" /> GitHub
           </button>
           <button 
-             type="button" 
+             type="button"  // Boton de Facebook
              className="facebook-btn"
              onClick={handleFacebookLogin}
              disabled={loading}
