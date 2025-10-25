@@ -180,7 +180,7 @@ function LoginPage() {
           </button>
           <button 
              type="button"  // Boton de Facebook
-             className="facebook-btn" // Clase CSS para el botón de Facebook
+             className="facebook-btn" // Clase CSS para el botón de  Facebook
              onClick={handleFacebookLogin}
              disabled={loading}
           >
