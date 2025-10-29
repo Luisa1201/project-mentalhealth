@@ -54,6 +54,11 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="header-logo">
+          <button className="sidebar-toggle-mobile" onClick={() => {
+            document.querySelector('.sidebar-toggle-btn')?.click();
+          }}>
+            ☰
+          </button>
           <span className="logo-icon">🧠</span>
           <span className="logo-text">Salud Mental</span>
         </div>
@@ -66,6 +71,19 @@ const Header = () => {
         </nav>
 
         <div className="header-actions">
+          {/* Vista móvil: chip con nombre y botón a la derecha */}
+          {!loading && user && (
+            <div className="user-compact">
+              <span className="user-compact-name">{userName || user.email.split('@')[0]}</span>
+              <button
+                className="btn-logout-mobile"
+                onClick={handleLogout}
+                title="Cerrar sesión"
+              >
+                <FaSignOutAlt />
+              </button>
+            </div>
+          )}
           {!loading && user && (
             <div className="user-session">
               <div className="user-info">
