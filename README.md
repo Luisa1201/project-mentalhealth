@@ -18,3 +18,5 @@ If you are developing a production application, we recommend using TypeScript wi
 * npm list react-router-dom
 * npm install sweetalert2
 * npm install react-icons
+* npm install -g firebase-tools  // instalar la herramienta oficial de firebase para poder trabajar con firebase hosting y otros servicios.
+* firebase --version //Revisar la versión de firebase

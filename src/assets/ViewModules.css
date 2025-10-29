@@ -503,21 +503,53 @@
     grid-template-columns: 1fr;
   }
 
+  /* Tabla responsive con scroll horizontal */
   .table-container {
-    overflow-x: scroll;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
   }
 
   .servicios-table {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    min-width: 700px; /* asegurar scroll horizontal */
   }
 
   .servicios-table th,
   .servicios-table td {
-    padding: 0.5rem;
+    padding: 0.5rem 0.4rem;
+    white-space: nowrap;
+  }
+
+  .servicios-table th {
+    font-size: 0.75rem;
   }
 
   .td-descripcion {
     max-width: 150px;
+  }
+
+  /* Botones de acciones más compactos */
+  .td-acciones {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .btn-ver,
+  .btn-editar,
+  .btn-eliminar {
+    padding: 0.4rem 0.5rem;
+    font-size: 1rem;
+    min-width: 32px;
+  }
+
+  /* Badge más compacto */
+  .badge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
   }
 
   .crud-operations {
@@ -532,41 +564,81 @@
   .btn-cancelar {
     width: 100%;
   }
+
+  /* Búsqueda y filtros en móvil */
+  .search-filter-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-box,
+  .filter-box {
+    min-width: 100%;
+  }
+
+  .btn-nuevo {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
+  .servicios-table {
+    font-size: 0.75rem;
+    min-width: 650px;
+  }
+
+  .servicios-table th,
+  .servicios-table td {
+    padding: 0.4rem 0.3rem;
+  }
+
   .td-acciones {
-    flex-direction: column;
+    gap: 0.25rem;
   }
 
   .btn-ver,
   .btn-editar,
   .btn-eliminar {
-    width: 100%;
+    padding: 0.35rem 0.4rem;
+    font-size: 0.9rem;
+    min-width: 28px;
   }
 }
 
 .volver-container {
   position: fixed;
-  bottom: 20px;   /* separación desde el borde inferior */
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
 }
+
 .btn-volver {
-  padding: 0.75rem 2rem;
+  padding: 0.5rem 1rem;
   background: linear-gradient(135deg, #00b3b3 0%, #06b6d4 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 179, 179, 0.3);
+  box-shadow: 0 3px 6px rgba(0, 179, 179, 0.3);
 }
 
 .btn-volver:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 179, 179, 0.4);
+  box-shadow: 0 5px 10px rgba(0, 179, 179, 0.4);
+}
+
+@media (max-width: 768px) {
+  .volver-container {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .btn-volver {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
 }
