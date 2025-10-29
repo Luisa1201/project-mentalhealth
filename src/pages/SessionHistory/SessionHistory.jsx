@@ -7,9 +7,14 @@ import "./SessionHistory.css";
 import Header from "../../Components/Header";
 import Sidebar from "../../Components/Sidebar";
 import Footer from "../../Components/Footer";
+import { useInactivityLogout } from "../../utils/useInactivityLogout";
 
 const SessionHistory = () => {
   const navigate = useNavigate();
+  
+  // Cierre automático de sesión por inactividad
+  useInactivityLogout();
+  
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, active, closed

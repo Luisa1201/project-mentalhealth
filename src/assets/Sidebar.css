@@ -161,6 +161,7 @@
 
   .sidebar {
     transform: translateX(-100%);
+    padding-top: 5rem; /* espacio para que no se oculte debajo del header */
   }
   
   .sidebar.active {
@@ -171,16 +172,13 @@
     transform: translateX(-100%);
   }
 
+  /* Ocultar el botón toggle original en móvil (ahora está en el header) */
   .sidebar-toggle-btn {
-    top: 1rem;
-    left: 1rem;
-    transform: translateY(0);
-    border-radius: 8px;
-    width: 50px;
-    height: 50px;
+    display: none;
   }
 
-  .sidebar.active ~ .sidebar-toggle-btn {
-    left: calc(var(--sidebar-width) - 60px);
+  /* Ocultar logo de sidebar en móvil para evitar duplicados */
+  .sidebar-logo {
+    display: none;
   }
 }

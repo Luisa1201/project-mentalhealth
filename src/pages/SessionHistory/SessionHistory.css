@@ -33,13 +33,13 @@
 .back-to-dashboard-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: 6px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -467,10 +467,12 @@
   }
 
   .back-to-dashboard-btn {
-    width: 100%;
+    width: auto;
     justify-content: center;
-    padding: 10px 15px;
-    font-size: 0.85rem;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    margin: 0 auto;
+    display: flex;
   }
 
   .session-history-header h1 {
@@ -534,5 +536,17 @@
 
   .title-icon {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-to-dashboard-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .back-to-dashboard-btn svg {
+    font-size: 0.8rem;
   }
 }

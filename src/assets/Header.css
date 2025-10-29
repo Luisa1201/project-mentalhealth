@@ -38,6 +38,48 @@
   transition: var(--transition);
 }
 
+/* Botón toggle sidebar en header (oculto por defecto) */
+.sidebar-toggle-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin-right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #00b3b3;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-toggle-mobile:hover {
+  transform: scale(1.1);
+  color: #007a7a;
+}
+
+/* Botón de logout junto al logo (oculto por defecto) */
+.btn-logout-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+}
+
+.btn-logout-mobile:hover {
+  background: #dc2626;
+}
+
 .header-logo:hover {
   transform: scale(1.05);
 }
@@ -93,6 +135,25 @@
   display: flex;
   gap: 1.5rem;
   align-items: center;
+}
+
+/* Compact user block for mobile (hidden by default) */
+.user-compact {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto; /* push to the right when visible */
+}
+
+.user-compact-name {
+  display: inline-block;
+  padding: 6px 10px;
+  background: rgba(0, 179, 179, 0.1);
+  color: var(--text-color);
+  border: 1px solid rgba(0, 179, 179, 0.25);
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .btn-primary,
@@ -310,14 +371,28 @@
 @media (max-width: 480px) {
   .header-container {
     padding: 0.8rem 1rem;
+    flex-wrap: nowrap;        /* mantener en una sola fila */
+    align-items: center;      /* alinear verticalmente con el logo */
   }
 
   .header-logo {
-    gap: 0.3rem;
+    gap: 0.35rem;             /* espacio más compacto */
   }
 
-  .logo-text {
-    font-size: 1.1rem;
+  .logo-text { font-size: 1.05rem; }
+
+  /* Logo más pequeño y minimalista */
+  .logo-icon {
+    font-size: 1.25rem;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Mostrar toggle de sidebar en header móvil */
+  .sidebar-toggle-mobile {
+    display: inline-flex;
   }
 
   .header-nav {
@@ -325,23 +400,30 @@
   }
 
   .header-actions {
-    width: 100%;
-    justify-content: space-between;
+    width: auto;              /* no ocupar toda la fila */
+    margin-left: auto;        /* empujar a la derecha */
+    justify-content: flex-end;
   }
 
-  .user-session {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
+  /* Ocultar el bloque de sesión para evitar duplicar el botón */
+  .user-session { display: none; }
+
+  /* Mostrar bloque compacto con nombre y botón a la derecha */
+  .user-compact { display: inline-flex; margin-left: 0; }
 
   .user-info {
     width: 100%;
   }
 
   .btn-logout {
-    width: 100%;
+    width: auto;
     justify-content: center;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    align-self: flex-start;
   }
+
+  /* Mostrar el botón compacto junto al logo en móvil */
+  .btn-logout-mobile { display: inline-flex; }
 }

@@ -6,9 +6,13 @@ import "./dashboard.css";
 import Sidebar from "../../Components/Sidebar.jsx";
 import Header from "../../Components/Header.jsx";
 import Footer from "../../Components/Footer.jsx";
+import { useInactivityLogout } from "../../utils/useInactivityLogout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  
+  // Cierre automático de sesión por inactividad (30 minutos)
+  useInactivityLogout();
 
   return (
     <>

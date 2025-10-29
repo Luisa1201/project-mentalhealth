@@ -1,27 +1,21 @@
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .register-body{
-    position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #a8edea, #00b3b3);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  z-index: 1000;
+  padding: 20px;
 }
 
 .register-container {
   width: 100%;
   max-width: 520px; /* más ancho */
-  margin: 70px auto;
-  padding: 60px; /* más espacio interno */
+  margin: 40px auto;
+  padding: 40px; /* más espacio interno */
   background: #ffffff;
   border-radius: 20px; /* bordes suaves */
   box-shadow: 0 10px 32px rgba(0, 128, 128, 0.28);
@@ -120,9 +114,9 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 500px) {
   .register-container {
-    margin: 40px 20px;
-    padding: 30px;
-    max-width: 95%;
+    margin: 24px 16px;
+    padding: 24px;
+    max-width: 100%;
   }
 
   .register-container h2 {
@@ -147,7 +141,7 @@
 
 .password-container input {
   width: 100%;
-  padding: 18px 50px 18px 20px; /* deja espacio a la derecha para el ojito */
+  padding: 18px 48px 18px 20px; /* deja espacio a la derecha para el ojito */
   border: 1px solid #a0dcdc;
   border-radius: 14px;
   font-size: 17px;
@@ -158,14 +152,15 @@
 /* Botón ojito dentro del input */
 .toggle-password {
   position: absolute;
-  top: 0%;
-  right: 0px;              /* pegado al borde derecho */
+  top: 50%;
+  right: 12px;              /* separado del borde */
+  transform: translateY(-50%);
   background: none;         /* sin fondo */
   border: none;             /* sin borde */
   cursor: pointer;
   font-size: 20px;          /* tamaño del ícono */
   color: #666;
-  padding: 0;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;

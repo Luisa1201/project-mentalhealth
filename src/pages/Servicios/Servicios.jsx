@@ -12,8 +12,12 @@ import {
 import { db } from "../../firebase";
 import "../../assets/ViewModules.css";
 import Swal from "sweetalert2";
+import { useInactivityLogout } from "../../utils/useInactivityLogout";
 
 function Servicios() {
+  // Cierre automático de sesión por inactividad
+  useInactivityLogout();
+  
   const [servicios, setServicios] = useState([]);
   const [serviciosFiltrados, setServiciosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
