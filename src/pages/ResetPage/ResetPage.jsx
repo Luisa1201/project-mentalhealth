@@ -22,7 +22,10 @@ function ResetPage() {
     const verifyCode = async () => {
       const code = searchParams.get("oobCode");
       
-      if (!code) {
+      // MODO DESARROLLO: Permitir acceso sin código para ver la vista
+      const devMode = searchParams.get("dev") === "true";
+      
+      if (!code && !devMode) {
         Swal.fire({
           icon: "error",
           title: "Enlace inválido",
@@ -30,6 +33,14 @@ function ResetPage() {
         }).then(() => {
           navigate("/loginPage");
         });
+        return;
+      }
+
+      // Si es modo desarrollo, solo mostrar la vista
+      if (devMode) {
+        setEmail("ejemplo@correo.com");
+        setOobCode("dev-mode");
+        setVerifying(false);
         return;
       }
 
@@ -99,6 +110,18 @@ function ResetPage() {
     }
 
     try {
+      // Si es modo desarrollo, solo simular el éxito
+      if (oobCode === "dev-mode") {
+        await Swal.fire({
+          icon: "info",
+          title: "Modo Desarrollo",
+          text: "Vista de demostración. En producción, aquí se restablecería la contraseña real.",
+          confirmButtonText: "Entendido",
+        });
+        setLoading(false);
+        return;
+      }
+
       // Confirmar el restablecimiento de contraseña
       await confirmPasswordReset(auth, oobCode, newPassword);
 
