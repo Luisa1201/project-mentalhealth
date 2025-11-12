@@ -3,7 +3,7 @@ import { Link, useNavigate} from "react-router-dom"
 import "./RegisterForm.css";
 import "../LoginPage/LoginPage.css"
 import Swal from "sweetalert2";
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, linkWithCredential, fetchSignInMethodsForEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, linkWithCredential, fetchSignInMethodsForEmail, linkWithPopup, EmailAuthProvider, GoogleAuthProvider as GAP, FacebookAuthProvider as FBP, GithubAuthProvider as GHP } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from "react-icons/fa"
@@ -28,6 +28,56 @@ function RegisterForm() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  // Intento de vinculación secuencial con manejo de conflictos
+  const tryLinkProviderSequential = async (providerType, providerInstance) => {
+    try {
+      await linkWithPopup(auth.currentUser, providerInstance);
+      Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+    } catch (error) {
+      if (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request") return;
+      if (error.code === "auth/provider-already-linked") return;
+      if (error.code === "auth/popup-blocked") {
+        // No forzamos redirect aquí por UX; el usuario puede reintentar
+        Swal.fire("Popup bloqueado", "Permite ventanas emergentes para continuar.", "info");
+        return;
+      }
+      if (error.code === "auth/account-exists-with-different-credential" || error.code === "auth/credential-already-in-use") {
+        const email = error.customData?.email || auth.currentUser?.email;
+        let pendingCred = error.credential ||
+          (providerInstance === GoogleProvider ? GAP.credentialFromError(error) :
+           providerInstance === FacebookProvider ? FBP.credentialFromError(error) :
+           providerInstance === GithubProvider ? GHP.credentialFromError(error) : null);
+        if (!email || !pendingCred) {
+          Swal.fire("Cuenta existente", "Inicia con el proveedor propietario del correo y vuelve a intentar.", "info");
+          return;
+        }
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+
+        // 1) Intento directo si ya estoy autenticado
+        try {
+          const linked = await linkWithCredential(auth.currentUser, pendingCred);
+          Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+          return linked;
+        } catch (_) {}
+
+        // 2) Iniciar con el proveedor principal y luego vincular
+        const primary = methods.find((m) => m !== "password") || methods[0];
+        const primaryInstance = primary === "google.com" ? GoogleProvider : primary === "facebook.com" ? FacebookProvider : primary === "github.com" ? GithubProvider : null;
+        if (primaryInstance) {
+          const signRes = await signInWithPopup(auth, primaryInstance);
+          // si también hay password, opcionalmente podríamos pedir contraseña y vincular email
+          await linkWithCredential(signRes.user, pendingCred);
+          Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+          return signRes;
+        }
+        Swal.fire("Cuenta existente", "Inicia con el proveedor sugerido y vuelve a intentar.", "info");
+      } else {
+        console.error(error);
+        Swal.fire("Error al vincular", error.message, "error");
+      }
+    }
   };
 
   // Validar formato de email
@@ -93,8 +143,24 @@ function RegisterForm() {
         metodo: "email"
       });
 
+      // Ofrecer vincular proveedores tras registro
+      const ask = await Swal.fire({
+        icon: "question",
+        title: "Vincular otros accesos",
+        text: "¿Deseas vincular Google, GitHub y Facebook a tu cuenta ahora?",
+        showCancelButton: true,
+        confirmButtonText: "Sí, vincular",
+        cancelButtonText: "Después",
+        confirmButtonColor: "#00b3b3",
+      });
+      if (ask.isConfirmed) {
+        await tryLinkProviderSequential("google", GoogleProvider);
+        await tryLinkProviderSequential("github", GithubProvider);
+        await tryLinkProviderSequential("facebook", FacebookProvider);
+      }
+
       Swal.fire("Registrado", "Usuario creado con éxito", "success");
-      navigate("/loginPage")
+      navigate("/dashboard")
     }catch (error){
       console.error("Error de registro", error);
 
@@ -153,6 +219,46 @@ function RegisterForm() {
         });
       }
       
+      // Ofrecer crear contraseña para login por correo si vino de proveedor social
+      const addPass = await Swal.fire({
+        icon: "question",
+        title: "Crear contraseña",
+        text: "¿Quieres habilitar también el acceso por email/contraseña?",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+        cancelButtonText: "No",
+        confirmButtonColor: "#00b3b3",
+      });
+      if (addPass.isConfirmed) {
+        const { value: password } = await Swal.fire({
+          title: "Define una contraseña",
+          input: "password",
+          inputPlaceholder: "Mínimo 6 caracteres",
+          inputAttributes: { autocapitalize: "off", autocorrect: "off" },
+          inputValidator: (v) => (!v || v.length < 6 ? "Debe tener al menos 6 caracteres" : undefined),
+          showCancelButton: true,
+          confirmButtonText: "Guardar",
+        });
+        if (password) {
+          const cred = EmailAuthProvider.credential(user.email, password);
+          await linkWithCredential(user, cred);
+        }
+      }
+
+      // Ofrecer vincular los otros proveedores restantes
+      const linkOthers = await Swal.fire({
+        icon: "question",
+        title: "Vincular otros accesos",
+        text: "¿Quieres vincular los demás proveedores ahora?",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+      });
+      if (linkOthers.isConfirmed) {
+        if (providerName !== "Google") await tryLinkProviderSequential("google", GoogleProvider);
+        if (providerName !== "GitHub") await tryLinkProviderSequential("github", GithubProvider);
+        if (providerName !== "Facebook") await tryLinkProviderSequential("facebook", FacebookProvider);
+      }
+
       navigate("/dashboard");
     } catch (error) {
       console.error(`Error al registrarse con ${providerName}:`, error);
@@ -176,7 +282,10 @@ function RegisterForm() {
     try {
       // Obtener el email del error
       const email = error.customData?.email || error.email;
-      const pendingCred = error.credential;
+      let pendingCred = error.credential ||
+        (newProvider === GoogleProvider ? GAP.credentialFromError(error) :
+         newProvider === FacebookProvider ? FBP.credentialFromError(error) :
+         newProvider === GithubProvider ? GHP.credentialFromError(error) : null);
 
       if (!email) {
         Swal.fire("Error", "No se pudo obtener el correo electrónico", "error");
@@ -248,8 +357,6 @@ function RegisterForm() {
           // Iniciar sesión con email y contraseña
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
-
-          // Vincular la nueva credencial
           if (pendingCred) {
             await linkWithCredential(user, pendingCred);
           }
@@ -279,11 +386,17 @@ function RegisterForm() {
                                      signInMethods.includes("facebook.com") ? "Facebook" : 
                                      signInMethods.includes("github.com") ? "GitHub" : "otro proveedor";
 
+        // Iniciar con el proveedor existente y luego vincular la credencial pendiente
+        const primaryProvider = existingProviderName === "Google" ? GoogleProvider : existingProviderName === "Facebook" ? FacebookProvider : GithubProvider;
+        const signRes = await signInWithPopup(auth, primaryProvider);
+        if (pendingCred) {
+          await linkWithCredential(signRes.user, pendingCred);
+        }
         await Swal.fire({
-          icon: "info",
-          title: "Vinculación de cuentas",
-          html: `Para vincular tu cuenta de ${newProviderName}, primero debes iniciar sesión con ${existingProviderName}.<br><br>Después de iniciar sesión, podrás vincular otras cuentas desde tu perfil.`,
-          confirmButtonText: "Entendido",
+          icon: "success",
+          title: "¡Cuentas vinculadas!",
+          text: `Tu cuenta de ${newProviderName} ha sido vinculada exitosamente.`,
+          confirmButtonText: "Continuar",
         });
       }
     } catch (linkError) {
