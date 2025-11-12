@@ -3,7 +3,7 @@ import { Link, useNavigate} from "react-router-dom"
 import "./RegisterForm.css";
 import "../LoginPage/LoginPage.css"
 import Swal from "sweetalert2";
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, linkWithCredential, fetchSignInMethodsForEmail, linkWithPopup, EmailAuthProvider, GoogleAuthProvider as GAP, FacebookAuthProvider as FBP, GithubAuthProvider as GHP } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, linkWithCredential, fetchSignInMethodsForEmail, linkWithPopup, EmailAuthProvider, GoogleAuthProvider as GAP, FacebookAuthProvider as FBP, GithubAuthProvider as GHP, setPersistence, inMemoryPersistence } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from "react-icons/fa"
@@ -127,8 +127,9 @@ function RegisterForm() {
     
     try {
       const emaillower = correo.toLowerCase();
-      
-       // Crear usuario para el servicio de authenticación de firebase
+      // Evitar que la sesión quede persistida en registro por email
+      await setPersistence(auth, inMemoryPersistence);
+      // Crear usuario para el servicio de autenticación de firebase
       const userCredential = await createUserWithEmailAndPassword(auth, emaillower, password);
       const user = userCredential.user;
 
@@ -146,7 +147,9 @@ function RegisterForm() {
       // (removido) no mostrar prompt para vincular otros accesos tras registro
 
       Swal.fire("Registrado", "Usuario creado con éxito", "success");
-      navigate("/dashboard")
+      // Cerrar sesión y llevar al login para que el usuario confirme
+      try { await auth.signOut(); } catch (_) {}
+      navigate("/loginPage")
     }catch (error){
       console.error("Error de registro", error);
 
@@ -167,6 +170,8 @@ function RegisterForm() {
   const handleSocialRegister = async (provider, providerName) => {
     setLoading(true);
     try {
+      // Evitar que la sesión social quede persistida
+      await setPersistence(auth, inMemoryPersistence);
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
@@ -187,65 +192,15 @@ function RegisterForm() {
           photoURL: user.photoURL || null
         });
         
-        Swal.fire({
-          icon: "success",
-          title: "¡Registro exitoso!",
-          text: `Bienvenido ${user.displayName || user.email}`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+        Swal.fire({ icon: "success", title: "¡Registro exitoso!", text: `Cuenta creada con ${providerName}.`, timer: 2000, showConfirmButton: false });
       } else {
-        // Si ya existe, solo iniciar sesión
-        Swal.fire({
-          icon: "success",
-          title: "¡Bienvenido de nuevo!",
-          text: `Sesión iniciada como ${user.displayName || user.email}`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+        // Si ya existe, informar y no mantener la sesión
+        Swal.fire({ icon: "info", title: "Cuenta existente", text: `Ya existe una cuenta con ${user.email}.`, timer: 1800, showConfirmButton: false });
       }
-      
-      // Ofrecer crear contraseña para login por correo si vino de proveedor social
-      const addPass = await Swal.fire({
-        icon: "question",
-        title: "Crear contraseña",
-        text: "¿Quieres habilitar también el acceso por email/contraseña?",
-        showCancelButton: true,
-        confirmButtonText: "Sí",
-        cancelButtonText: "No",
-        confirmButtonColor: "#00b3b3",
-      });
-      if (addPass.isConfirmed) {
-        const { value: password } = await Swal.fire({
-          title: "Define una contraseña",
-          input: "password",
-          inputPlaceholder: "Mínimo 6 caracteres",
-          inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-          inputValidator: (v) => (!v || v.length < 6 ? "Debe tener al menos 6 caracteres" : undefined),
-          showCancelButton: true,
-          confirmButtonText: "Guardar",
-        });
-        if (password) {
-          const cred = EmailAuthProvider.credential(user.email, password);
-          await linkWithCredential(user, cred);
-        }
-      }
-
-      // Ofrecer vincular los otros proveedores restantes
-      const linkOthers = await Swal.fire({
-        icon: "question",
-        title: "Vincular otros accesos",
-        text: "¿Quieres vincular los demás proveedores ahora?",
-        showCancelButton: true,
-        confirmButtonText: "Sí",
-      });
-      if (linkOthers.isConfirmed) {
-        if (providerName !== "Google") await tryLinkProviderSequential("google", GoogleProvider);
-        if (providerName !== "GitHub") await tryLinkProviderSequential("github", GithubProvider);
-        if (providerName !== "Facebook") await tryLinkProviderSequential("facebook", FacebookProvider);
-      }
-
-      navigate("/dashboard");
+      // Cerrar sesión inmediatamente y redirigir al login y terminar flujo
+      try { await auth.signOut(); } catch (_) {}
+      navigate("/loginPage");
+      return;
     } catch (error) {
       console.error(`Error al registrarse con ${providerName}:`, error);
       
