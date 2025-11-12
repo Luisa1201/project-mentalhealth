@@ -143,21 +143,7 @@ function RegisterForm() {
         metodo: "email"
       });
 
-      // Ofrecer vincular proveedores tras registro
-      const ask = await Swal.fire({
-        icon: "question",
-        title: "Vincular otros accesos",
-        text: "¿Deseas vincular Google, GitHub y Facebook a tu cuenta ahora?",
-        showCancelButton: true,
-        confirmButtonText: "Sí, vincular",
-        cancelButtonText: "Después",
-        confirmButtonColor: "#00b3b3",
-      });
-      if (ask.isConfirmed) {
-        await tryLinkProviderSequential("google", GoogleProvider);
-        await tryLinkProviderSequential("github", GithubProvider);
-        await tryLinkProviderSequential("facebook", FacebookProvider);
-      }
+      // (removido) no mostrar prompt para vincular otros accesos tras registro
 
       Swal.fire("Registrado", "Usuario creado con éxito", "success");
       navigate("/dashboard")
