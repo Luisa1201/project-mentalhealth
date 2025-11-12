@@ -424,13 +424,14 @@
     width: auto;              /* no ocupar toda la fila */
     margin-left: auto;        /* empujar a la derecha */
     justify-content: flex-end;
+    gap: 0.6rem;
   }
 
   /* Ocultar el bloque de sesión para evitar duplicar el botón */
   .user-session { display: none; }
 
   /* Mostrar bloque compacto con nombre y botón a la derecha */
-  .user-compact { display: inline-flex; margin-left: 0; }
+  .user-compact { display: inline-flex; margin-left: 0; gap: 0.4rem; }
 
   .user-info {
     width: 100%;
@@ -447,4 +448,35 @@
 
   /* Mostrar el botón compacto junto al logo en móvil */
   .btn-logout-mobile { display: inline-flex; }
+
+  /* Forzar tamaños menores de los iconos de proveedores en móvil (override inline) */
+  .provider-icons .provider-btn {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+  }
+  .provider-icons .provider-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .header-logo { margin-right: 0.25rem; }
+}
+
+@media (max-width: 360px) {
+  /* Ocultar el texto del logo para ganar espacio */
+  .logo-text { display: none; }
+  /* Aún más compacto en botones y gaps */
+  .provider-icons .provider-btn {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .provider-icons .provider-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .btn-logout-mobile {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+  .header-container { gap: 0.4rem; }
 }
