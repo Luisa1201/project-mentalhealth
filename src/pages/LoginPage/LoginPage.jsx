@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./LoginPage.css";
 import Swal from "sweetalert2";
-import { signInWithEmailAndPassword, signInWithPopup, linkWithCredential, fetchSignInMethodsForEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 import { registerLogin, getAuthProvider } from "../../utils/sessionManager";
 
@@ -16,6 +16,47 @@ function LoginPage() {
   });
   
    const [loading, setLoading] = useState(false);
+   const [isInApp, setIsInApp] = useState(false);
+   const [storageIssue, setStorageIssue] = useState(false);
+
+   // Procesar resultado de redirección (flujo móvil/in-app)
+   useEffect(() => {
+     const resolveRedirect = async () => {
+       try {
+         const res = await getRedirectResult(auth);
+         if (res && res.user) {
+           const user = res.user;
+           // Registrar inicio de sesión con el proveedor usado
+           const providerId = (user.providerData?.[0]?.providerId) || "unknown";
+           const providerName = providerId === "google.com" ? "Google" : providerId === "facebook.com" ? "Facebook" : providerId === "github.com" ? "GitHub" : "Social";
+           await registerLogin(user, providerName);
+           Swal.fire({ icon: "success", title: "¡Bienvenido!", text: `Sesión iniciada con ${providerName}`, timer: 1600, showConfirmButton: false });
+           navigate("/dashboard");
+         }
+       } catch (e) {
+         // silenciar si no hay resultado o si el usuario canceló
+         if (e?.code && !["auth/no-auth-event"].includes(e.code)) {
+           console.warn("Redirect result error:", e);
+         }
+       }
+     };
+     resolveRedirect();
+   }, [navigate]);
+
+   useEffect(() => {
+     const ua = navigator.userAgent || "";
+     const inApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
+     setIsInApp(inApp);
+     let sessionOk = true;
+     try {
+       const k = "__ss_check__";
+       sessionStorage.setItem(k, "1");
+       sessionStorage.removeItem(k);
+     } catch (_) {
+       sessionOk = false;
+     }
+     setStorageIssue(!sessionOk);
+   }, []);
 
    const handleChange = (e) => {
     setFormData({
@@ -71,6 +112,16 @@ function LoginPage() {
   const handleSocialLogin = async (provider, providerName) => {
     setLoading(true);
     try {
+      // Detectar móvil/navegadores in-app y usar redirect
+      const ua = navigator.userAgent || "";
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      const isInApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
+
+      if (isMobile || isInApp) {
+        await signInWithRedirect(auth, provider);
+        return; // El flujo continuará en getRedirectResult
+      }
+
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
@@ -92,7 +143,13 @@ function LoginPage() {
       if (error.code === "auth/popup-closed-by-user") {
         Swal.fire("Cancelado", "Cerraste la ventana de inicio de sesión", "info");
       } else if (error.code === "auth/popup-blocked") {
-        Swal.fire("Error", "El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes", "error");
+        // Fallback automático a redirect si el popup fue bloqueado
+        try {
+          await signInWithRedirect(auth, provider);
+          return;
+        } catch (_) {
+          Swal.fire("Error", "El navegador bloqueó la ventana emergente. Intenta nuevamente o abre en el navegador del sistema", "error");
+        }
       } else if (error.code === "auth/account-exists-with-different-credential") {
         // Intentar vincular cuentas
         await handleAccountLinking(error, provider, providerName);
@@ -230,10 +287,13 @@ function LoginPage() {
   const handleGithubLogin = () => handleSocialLogin(GithubProvider, "GitHub");
   const handleFacebookLogin = () => handleSocialLogin(FacebookProvider, "Facebook");
 
+  // Flags calculados en useEffect: isInApp, storageIssue
+
   return (
     <div className="login-body">
     <div className="login-container">
       <div className="login-header">
+
         <img 
           src="/img/welcome.png"   
           alt="Bienvenido" 
@@ -282,6 +342,12 @@ function LoginPage() {
           </a>
         </p>
 
+      {(isInApp || storageIssue) && (
+        <div className="inapp-warning" style={{background:'#FFF7ED', color:'#9A3412', border:'1px solid #FED7AA', padding:'10px', borderRadius:8, marginTop:10}}>
+          <strong>Para continuar:</strong> abre este enlace en el navegador del sistema (Chrome/Safari). Los navegadores dentro de apps pueden bloquear el inicio de sesión.
+        </div>
+      )}
+
       <div className="social-login">
         <p>O ingresa con</p>
         <div className="social-buttons">
@@ -289,26 +355,25 @@ function LoginPage() {
             type="button" 
             className="google-btn"
             onClick={handleGoogleLogin}
-            disabled={loading}
+            disabled={isInApp || storageIssue || loading}
           >
-            <FaGoogle className="icon" /> Google
+            <FaGoogle /> Google
           </button>
           <button 
-            type="button"  // Boton de GitHub
-            className="github-btn" // Clase CSS para el botón de GitHub
+            type="button" 
+            className="github-btn"
             onClick={handleGithubLogin}
-            disabled={loading}
+            disabled={isInApp || storageIssue || loading}
           >
-            <FaGithub className="icon" /> GitHub
+            <FaGithub /> GitHub
           </button>
           <button 
-             type="button"  // Boton de Facebook
-             className="facebook-btn" // Clase CSS para el botón de Facebook
-             onClick={handleFacebookLogin}
-             disabled={loading}
+            type="button" 
+            className="facebook-btn"
+            onClick={handleFacebookLogin}
+            disabled={isInApp || storageIssue || loading}
           >
-            
-            <FaFacebook className="icon" /> Facebook 
+            <FaFacebook /> Facebook
           </button>
         </div>
       </div>

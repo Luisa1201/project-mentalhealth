@@ -139,7 +139,19 @@ const Header = () => {
         console.warn("No se pudieron obtener métodos de inicio de sesión:", e);
       }
 
-      const result = await linkWithPopup(auth.currentUser, provider);
+      // En móviles o navegadores in-app usar redirect para evitar bloqueos de popup
+      const ua = navigator.userAgent || "";
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      const isInApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
+
+      let result;
+      if (isMobile || isInApp) {
+        await linkWithRedirect(auth.currentUser, provider);
+        return; // El flujo continúa en getRedirectResult
+      } else {
+        result = await linkWithPopup(auth.currentUser, provider);
+      }
+
       const providers = (result.user.providerData || []).map((p) => p.providerId);
       setLinked({
         password: providers.includes("password"),
