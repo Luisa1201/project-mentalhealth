@@ -1,5 +1,19 @@
 # Autenticación con Facebook en el proyecto
 
+Este documento describe cómo está implementado el proveedor de **autenticación con Facebook** en este proyecto: configuración en Facebook Developers, en Firebase y el flujo de vinculación dentro de la aplicación.
+
+## Índice
+
+1. Requisitos previos  
+2. Configuración en Facebook (Facebook Developers)  
+3. Configuración en Firebase Console  
+4. Configuración del Auth en el código  
+5. Flujo de vinculación de cuenta con Facebook  
+6. Manejo de errores y casos especiales  
+7. Pruebas recomendadas  
+8. Dónde tocar el código  
+9. Conclusión
+
 ## 1) Requisitos previos
 
 - Proyecto React funcionando (este repositorio).
@@ -23,6 +37,7 @@
 5. Copia el **App ID** y **App Secret** (se usan en Firebase, no directamente en este código).
 
 ---
+
 
 ## 3) Configuración en Firebase Console
 
