@@ -3,7 +3,7 @@ import { Link, useNavigate} from "react-router-dom"
 import "./RegisterForm.css";
 import "../LoginPage/LoginPage.css"
 import Swal from "sweetalert2";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, linkWithCredential, fetchSignInMethodsForEmail, linkWithPopup, EmailAuthProvider, GoogleAuthProvider as GAP, FacebookAuthProvider as FBP, GithubAuthProvider as GHP, setPersistence, inMemoryPersistence } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from "react-icons/fa"
@@ -28,6 +28,56 @@ function RegisterForm() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  // Intento de vinculación secuencial con manejo de conflictos
+  const tryLinkProviderSequential = async (providerType, providerInstance) => {
+    try {
+      await linkWithPopup(auth.currentUser, providerInstance);
+      Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+    } catch (error) {
+      if (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request") return;
+      if (error.code === "auth/provider-already-linked") return;
+      if (error.code === "auth/popup-blocked") {
+        // No forzamos redirect aquí por UX; el usuario puede reintentar
+        Swal.fire("Popup bloqueado", "Permite ventanas emergentes para continuar.", "info");
+        return;
+      }
+      if (error.code === "auth/account-exists-with-different-credential" || error.code === "auth/credential-already-in-use") {
+        const email = error.customData?.email || auth.currentUser?.email;
+        let pendingCred = error.credential ||
+          (providerInstance === GoogleProvider ? GAP.credentialFromError(error) :
+           providerInstance === FacebookProvider ? FBP.credentialFromError(error) :
+           providerInstance === GithubProvider ? GHP.credentialFromError(error) : null);
+        if (!email || !pendingCred) {
+          Swal.fire("Cuenta existente", "Inicia con el proveedor propietario del correo y vuelve a intentar.", "info");
+          return;
+        }
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+
+        // 1) Intento directo si ya estoy autenticado
+        try {
+          const linked = await linkWithCredential(auth.currentUser, pendingCred);
+          Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+          return linked;
+        } catch (_) {}
+
+        // 2) Iniciar con el proveedor principal y luego vincular
+        const primary = methods.find((m) => m !== "password") || methods[0];
+        const primaryInstance = primary === "google.com" ? GoogleProvider : primary === "facebook.com" ? FacebookProvider : primary === "github.com" ? GithubProvider : null;
+        if (primaryInstance) {
+          const signRes = await signInWithPopup(auth, primaryInstance);
+          // si también hay password, opcionalmente podríamos pedir contraseña y vincular email
+          await linkWithCredential(signRes.user, pendingCred);
+          Swal.fire({ icon: "success", title: `Vinculado ${providerType}`, timer: 1200, showConfirmButton: false });
+          return signRes;
+        }
+        Swal.fire("Cuenta existente", "Inicia con el proveedor sugerido y vuelve a intentar.", "info");
+      } else {
+        console.error(error);
+        Swal.fire("Error al vincular", error.message, "error");
+      }
+    }
   };
 
   // Validar formato de email
@@ -77,8 +127,9 @@ function RegisterForm() {
     
     try {
       const emaillower = correo.toLowerCase();
-      
-       // Crear usuario para el servicio de authenticación de firebase
+      // Evitar que la sesión quede persistida en registro por email
+      await setPersistence(auth, inMemoryPersistence);
+      // Crear usuario para el servicio de autenticación de firebase
       const userCredential = await createUserWithEmailAndPassword(auth, emaillower, password);
       const user = userCredential.user;
 
@@ -93,7 +144,11 @@ function RegisterForm() {
         metodo: "email"
       });
 
+      // (removido) no mostrar prompt para vincular otros accesos tras registro
+
       Swal.fire("Registrado", "Usuario creado con éxito", "success");
+      // Cerrar sesión y llevar al login para que el usuario confirme
+      try { await auth.signOut(); } catch (_) {}
       navigate("/loginPage")
     }catch (error){
       console.error("Error de registro", error);
@@ -115,6 +170,8 @@ function RegisterForm() {
   const handleSocialRegister = async (provider, providerName) => {
     setLoading(true);
     try {
+      // Evitar que la sesión social quede persistida
+      await setPersistence(auth, inMemoryPersistence);
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
@@ -135,25 +192,15 @@ function RegisterForm() {
           photoURL: user.photoURL || null
         });
         
-        Swal.fire({
-          icon: "success",
-          title: "¡Registro exitoso!",
-          text: `Bienvenido ${user.displayName || user.email}`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+        Swal.fire({ icon: "success", title: "¡Registro exitoso!", text: `Cuenta creada con ${providerName}.`, timer: 2000, showConfirmButton: false });
       } else {
-        // Si ya existe, solo iniciar sesión
-        Swal.fire({
-          icon: "success",
-          title: "¡Bienvenido de nuevo!",
-          text: `Sesión iniciada como ${user.displayName || user.email}`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+        // Si ya existe, informar y no mantener la sesión
+        Swal.fire({ icon: "info", title: "Cuenta existente", text: `Ya existe una cuenta con ${user.email}.`, timer: 1800, showConfirmButton: false });
       }
-      
-      navigate("/dashboard");
+      // Cerrar sesión inmediatamente y redirigir al login y terminar flujo
+      try { await auth.signOut(); } catch (_) {}
+      navigate("/loginPage");
+      return;
     } catch (error) {
       console.error(`Error al registrarse con ${providerName}:`, error);
       
@@ -162,12 +209,140 @@ function RegisterForm() {
       } else if (error.code === "auth/popup-blocked") {
         Swal.fire("Error", "El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes", "error");
       } else if (error.code === "auth/account-exists-with-different-credential") {
-        Swal.fire("Error", "Ya existe una cuenta con este correo usando otro método de registro", "error");
+        // Intentar vincular cuentas
+        await handleAccountLinking(error, provider, providerName);
       } else {
         Swal.fire("Error", `No se pudo registrar con ${providerName}. Intenta de nuevo`, "error");
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAccountLinking = async (error, newProvider, newProviderName) => {
+    try {
+      // Obtener el email del error
+      const email = error.customData?.email || error.email;
+      let pendingCred = error.credential ||
+        (newProvider === GoogleProvider ? GAP.credentialFromError(error) :
+         newProvider === FacebookProvider ? FBP.credentialFromError(error) :
+         newProvider === GithubProvider ? GHP.credentialFromError(error) : null);
+
+      if (!email) {
+        Swal.fire("Error", "No se pudo obtener el correo electrónico", "error");
+        return;
+      }
+
+      // Obtener los métodos de inicio de sesión existentes para este email
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      
+      if (signInMethods.length === 0) {
+        Swal.fire("Error", "No se encontraron métodos de inicio de sesión para este correo", "error");
+        return;
+      }
+
+      // Mapear métodos a nombres legibles
+      const methodNames = signInMethods.map(method => {
+        if (method === "password") return "Email/Contraseña";
+        if (method === "google.com") return "Google";
+        if (method === "facebook.com") return "Facebook";
+        if (method === "github.com") return "GitHub";
+        return method;
+      }).join(", ");
+
+      // Preguntar al usuario si desea vincular las cuentas
+      const result = await Swal.fire({
+        icon: "question",
+        title: "Cuenta existente",
+        html: `Ya tienes una cuenta con el correo <strong>${email}</strong> usando: <strong>${methodNames}</strong>.<br><br>¿Deseas vincular tu cuenta de <strong>${newProviderName}</strong> con tu cuenta existente?`,
+        showCancelButton: true,
+        confirmButtonText: "Sí, vincular cuentas",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#00b3b3",
+        cancelButtonColor: "#d33",
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      // Si el método existente es email/password, pedir la contraseña
+      if (signInMethods.includes("password")) {
+        const { value: password } = await Swal.fire({
+          title: "Ingresa tu contraseña",
+          html: `Para vincular tu cuenta de ${newProviderName}, primero debes iniciar sesión con tu correo y contraseña.`,
+          input: "password",
+          inputPlaceholder: "Contraseña",
+          inputAttributes: {
+            autocapitalize: "off",
+            autocorrect: "off"
+          },
+          showCancelButton: true,
+          confirmButtonText: "Continuar",
+          cancelButtonText: "Cancelar",
+          confirmButtonColor: "#00b3b3",
+          inputValidator: (value) => {
+            if (!value) {
+              return "Debes ingresar tu contraseña";
+            }
+          }
+        });
+
+        if (!password) {
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          // Iniciar sesión con email y contraseña
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          if (pendingCred) {
+            await linkWithCredential(user, pendingCred);
+          }
+
+          await Swal.fire({
+            icon: "success",
+            title: "¡Cuentas vinculadas!",
+            text: `Tu cuenta de ${newProviderName} ha sido vinculada exitosamente. Ahora puedes iniciar sesión con cualquiera de los métodos.`,
+            confirmButtonText: "Continuar",
+          });
+
+          navigate("/dashboard");
+        } catch (linkError) {
+          console.error("Error al vincular cuentas:", linkError);
+          
+          if (linkError.code === "auth/wrong-password") {
+            Swal.fire("Error", "Contraseña incorrecta", "error");
+          } else {
+            Swal.fire("Error", "No se pudo vincular las cuentas. Intenta de nuevo", "error");
+          }
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // Si el método existente es otro proveedor social
+        const existingProviderName = signInMethods.includes("google.com") ? "Google" : 
+                                     signInMethods.includes("facebook.com") ? "Facebook" : 
+                                     signInMethods.includes("github.com") ? "GitHub" : "otro proveedor";
+
+        // Iniciar con el proveedor existente y luego vincular la credencial pendiente
+        const primaryProvider = existingProviderName === "Google" ? GoogleProvider : existingProviderName === "Facebook" ? FacebookProvider : GithubProvider;
+        const signRes = await signInWithPopup(auth, primaryProvider);
+        if (pendingCred) {
+          await linkWithCredential(signRes.user, pendingCred);
+        }
+        await Swal.fire({
+          icon: "success",
+          title: "¡Cuentas vinculadas!",
+          text: `Tu cuenta de ${newProviderName} ha sido vinculada exitosamente.`,
+          confirmButtonText: "Continuar",
+        });
+      }
+    } catch (linkError) {
+      console.error("Error en el proceso de vinculación:", linkError);
+      Swal.fire("Error", "Hubo un problema al vincular las cuentas", "error");
     }
   };
 

@@ -1,4 +1,4 @@
-import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, serverTimestamp, getDocs, query, where, writeBatch, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 /**
@@ -85,5 +85,31 @@ export const getAuthProvider = (user) => {
       return "Email";
     default:
       return "Desconocido";
+  }
+};
+
+export const clearLocalSessionPointer = () => {
+  try {
+    localStorage.removeItem("currentSessionId");
+  } catch (_) {}
+};
+
+export const resetUserSessions = async (userId, options = { hard: false }) => {
+  const hard = !!options.hard;
+  const q = query(collection(db, "sessions"), where("userId", "==", userId));
+  const snap = await getDocs(q);
+  if (snap.empty) return 0;
+  if (hard) {
+    const batch = writeBatch(db);
+    snap.forEach((d) => batch.delete(doc(db, "sessions", d.id)));
+    await batch.commit();
+    clearLocalSessionPointer();
+    return snap.size;
+  } else {
+    const batch = writeBatch(db);
+    snap.forEach((d) => batch.update(doc(db, "sessions", d.id), { isActive: false, logoutTime: serverTimestamp() }));
+    await batch.commit();
+    clearLocalSessionPointer();
+    return snap.size;
   }
 };
