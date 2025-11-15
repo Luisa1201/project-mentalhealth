@@ -18,6 +18,8 @@ import {
   FacebookAuthProvider as FBP,
   GithubAuthProvider as GHP,
   EmailAuthProvider,
+  setPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 
 const Header = () => {
@@ -139,13 +141,15 @@ const Header = () => {
         console.warn("No se pudieron obtener métodos de inicio de sesión:", e);
       }
 
-      // En móviles o navegadores in-app usar redirect para evitar bloqueos de popup
+      // Preferir popup; usar redirect sólo en iOS/Safari o navegadores in-app
       const ua = navigator.userAgent || "";
-      const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+      const isSafari = /Safari\//.test(ua) && !/Chrome\//.test(ua);
       const isInApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
 
       let result;
-      if (isMobile || isInApp) {
+      if (isIOS || isSafari || isInApp) {
+        try { await setPersistence(auth, browserLocalPersistence); } catch (_) {}
         await linkWithRedirect(auth.currentUser, provider);
         return; // El flujo continúa en getRedirectResult
       } else {
@@ -186,6 +190,7 @@ const Header = () => {
         return;
       } else if (error.code === "auth/popup-blocked") {
         try {
+          try { await setPersistence(auth, browserLocalPersistence); } catch (_) {}
           await linkWithRedirect(auth.currentUser, provider);
           return;
         } catch (e) {

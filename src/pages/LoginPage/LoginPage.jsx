@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./LoginPage.css";
 import Swal from "sweetalert2";
-import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth, GoogleProvider, GithubProvider, FacebookProvider } from "../../firebase";
 import { registerLogin, getAuthProvider } from "../../utils/sessionManager";
 
@@ -44,10 +44,10 @@ function LoginPage() {
    }, [navigate]);
 
    useEffect(() => {
-     const ua = navigator.userAgent || "";
-     const inApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
-     setIsInApp(inApp);
-     let sessionOk = true;
+    const ua = navigator.userAgent || "";
+    const inApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
+    setIsInApp(inApp);
+    let sessionOk = true;
      try {
        const k = "__ss_check__";
        sessionStorage.setItem(k, "1");
@@ -55,15 +55,17 @@ function LoginPage() {
      } catch (_) {
        sessionOk = false;
      }
-     setStorageIssue(!sessionOk);
-   }, []);
+    setStorageIssue(!sessionOk);
+  }, []);
 
-   const handleChange = (e) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
+
+  // (sin helper de navegador del sistema en esta versión)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -112,49 +114,39 @@ function LoginPage() {
   const handleSocialLogin = async (provider, providerName) => {
     setLoading(true);
     try {
-      // Detectar móvil/navegadores in-app y usar redirect
       const ua = navigator.userAgent || "";
-      const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
       const isInApp = /FBAN|FBAV|Instagram|Line|Twitter|LinkedIn|WhatsApp|Messenger/i.test(ua);
-
-      if (isMobile || isInApp) {
+      // En navegadores in‑app, usar redirect directamente
+      if (isInApp) {
+        try { await setPersistence(auth, browserLocalPersistence); } catch (_) {}
         await signInWithRedirect(auth, provider);
-        return; // El flujo continuará en getRedirectResult
+        return; // flujo continúa en getRedirectResult
       }
 
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      
-      // Registrar inicio de sesión con el proveedor
       await registerLogin(user, providerName);
-      
-      Swal.fire({
-        icon: "success",
-        title: "¡Bienvenido!",
-        text: `Sesión iniciada con ${providerName} como ${user.displayName || user.email}`,
-        timer: 2000,
-        showConfirmButton: false
-      });
-      
+      Swal.fire({ icon: "success", title: "¡Bienvenido!", text: `Sesión iniciada con ${providerName} como ${user.displayName || user.email}`, timer: 2000, showConfirmButton: false });
       navigate("/dashboard");
     } catch (error) {
       console.error(`Error al iniciar sesión con ${providerName}:`, error);
-      
       if (error.code === "auth/popup-closed-by-user") {
         Swal.fire("Cancelado", "Cerraste la ventana de inicio de sesión", "info");
-      } else if (error.code === "auth/popup-blocked") {
-        // Fallback automático a redirect si el popup fue bloqueado
-        try {
-          await signInWithRedirect(auth, provider);
-          return;
-        } catch (_) {
+      } else if (
+        error.code === "auth/popup-blocked" ||
+        error.code === "auth/cancelled-popup-request" ||
+        error.code === "auth/operation-not-supported-in-this-environment" ||
+        error.code === "auth/internal-error"
+      ) {
+        try { await setPersistence(auth, browserLocalPersistence); await signInWithRedirect(auth, provider); return; } catch (_) {
           Swal.fire("Error", "El navegador bloqueó la ventana emergente. Intenta nuevamente o abre en el navegador del sistema", "error");
         }
       } else if (error.code === "auth/account-exists-with-different-credential") {
-        // Intentar vincular cuentas
         await handleAccountLinking(error, provider, providerName);
       } else {
-        Swal.fire("Error", `No se pudo iniciar sesión con ${providerName}. Intenta de nuevo`, "error");
+        try { await setPersistence(auth, browserLocalPersistence); await signInWithRedirect(auth, provider); return; } catch (_) {
+          Swal.fire("Error", `No se pudo iniciar sesión con ${providerName}. Intenta de nuevo`, "error");
+        }
       }
     } finally {
       setLoading(false);
@@ -355,7 +347,7 @@ function LoginPage() {
             type="button" 
             className="google-btn"
             onClick={handleGoogleLogin}
-            disabled={isInApp || storageIssue || loading}
+            disabled={isInApp || loading}
           >
             <FaGoogle /> Google
           </button>
