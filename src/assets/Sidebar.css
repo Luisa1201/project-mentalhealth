@@ -3,7 +3,7 @@
   --secondary-color: #06b6d4;
   --background-color: #f9fafb;
   --text-color: #1f2937;
-  --sidebar-width: 220px;
+  --sidebar-width: 200px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --font-family: "Poppins", "Segoe UI", sans-serif;
 }
