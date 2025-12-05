@@ -13,6 +13,10 @@ import { db } from "../../firebase";
 import "../../assets/ViewModules.css";
 import Swal from "sweetalert2";
 import { useInactivityLogout } from "../../utils/useInactivityLogout";
+import { FaFilePdf, FaFileExcel } from "react-icons/fa";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 function Psicoorientadores() {
   // Cierre automático de sesión por inactividad
@@ -26,6 +30,8 @@ function Psicoorientadores() {
 
   const [showForm, setShowForm] = useState(false);
   const [editando, setEditando] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportFilter, setExportFilter] = useState("all");
   const [formData, setFormData] = useState({
     nombre: "",
     especialidad: "",
@@ -43,7 +49,7 @@ function Psicoorientadores() {
     });
   };
 
-  // READ - cargar psicoorientadores2
+  // READ - cargar psicoorientadores
   const cargarPsicos = async () => {
     try {
       setLoading(true);
@@ -52,9 +58,12 @@ function Psicoorientadores() {
       const array = [];
       
       querySnapshot.forEach((doc) => {
+        const data = doc.data();
         array.push({
           id: doc.id,
-          ...doc.data()
+          ...data,
+          telefono: data.telefono || 'No registrado',
+          disponibilidad: data.disponibilidad || 'No especificada'
         });
       });
       
@@ -64,6 +73,122 @@ function Psicoorientadores() {
       console.error("Error al cargar psicoorientadores:", error);
       Swal.fire("Error", "No se pudieron cargar los psicoorientadores", "error");
       setLoading(false);
+    }
+  };
+
+  // Exportar a PDF
+  const handleExportPDF = () => {
+    setIsExporting(true);
+    try {
+      // Crear documento con orientación horizontal
+      const doc = new jsPDF('l', 'mm', 'a4');
+      
+      // Título
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('REPORTE DE PSICOORIENTADORES', 148, 15, { align: 'center' });
+      
+      // Fecha
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, 14, 25);
+      
+      // Datos a exportar
+      const dataToExport = exportFilter === 'filtered' ? psicosFiltrados : psicos;
+      
+      // Preparar datos para la tabla
+      const tableColumn = ["Nombre", "Especialidad", "Correo", "Teléfono", "Estado"];
+      const tableRows = dataToExport.map(psico => [
+        psico.nombre || 'N/A',
+        psico.especialidad || 'N/A',
+        psico.correo || 'N/A',
+        psico.telefono || 'No registrado',
+        psico.estado || 'N/A'
+      ]);
+
+      // Generar tabla
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 30,
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          textAlign: 'center'
+        },
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          textColor: [0, 0, 0],
+          lineColor: [200, 200, 200],
+          lineWidth: 0.1
+        },
+        columnStyles: {
+          0: { cellWidth: 40 }, // Nombre
+          1: { cellWidth: 40 }, // Especialidad
+          2: { cellWidth: 60 }, // Correo
+          3: { cellWidth: 30 }, // Teléfono
+          4: { cellWidth: 25 }  // Estado
+        },
+        margin: { left: 10, right: 10 }
+      });
+
+      // Guardar PDF
+      doc.save(`reporte_psicoorientadores_${new Date().toISOString().split('T')[0]}.pdf`);
+      
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      Swal.fire('Error', 'Error al generar el archivo PDF', 'error');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Exportar a Excel
+  const handleExportExcel = () => {
+    setIsExporting(true);
+    try {
+      const dataToExport = exportFilter === 'filtered' ? psicosFiltrados : psicos;
+      
+      // Preparar datos para Excel
+      const excelData = dataToExport.map(psico => ({
+        'Nombre': psico.nombre || 'N/A',
+        'Especialidad': psico.especialidad || 'N/A',
+        'Correo': psico.correo || 'N/A',
+        'Teléfono': psico.telefono || 'No registrado',
+        'Disponibilidad': psico.disponibilidad || 'No especificada',
+        'Estado': psico.estado || 'N/A',
+        'Creado': psico.creado ? psico.creado.toDate().toLocaleString('es-ES') : 'N/A'
+      }));
+
+      // Crear libro y hoja de cálculo
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(wb, ws, 'Psicoorientadores');
+
+      // Añadir filtros
+      const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+      ws['!autofilter'] = { ref: XLSX.utils.encode_range(range) };
+
+      // Ajustar anchos de columna
+      ws['!cols'] = [
+        { wch: 25 }, // Nombre
+        { wch: 30 }, // Especialidad
+        { wch: 35 }, // Correo
+        { wch: 20 }, // Teléfono
+        { wch: 25 }, // Disponibilidad
+        { wch: 15 }, // Estado
+        { wch: 25 }  // Creado
+      ];
+
+      // Guardar archivo Excel
+      XLSX.writeFile(wb, `reporte_psicoorientadores_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (error) {
+      console.error('Error generando Excel:', error);
+      Swal.fire('Error', 'Error al generar el archivo Excel', 'error');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -205,25 +330,56 @@ function Psicoorientadores() {
       <div className="servicios-container">
         {/* Búsqueda y filtros */}
         <div className="search-filter-container">
-          <div className="search-box">
+          <div className="search-bar">
             <input
               type="text"
-              placeholder="🔍 Buscar por nombre, especialidad o correo..."
+              placeholder="Buscar psicoorientadores..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
-          </div>
-          <div className="filter-box">
             <select
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value)}
               className="filter-select"
             >
               <option value="Todos">Todos los estados</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
+              <option value="Activo">Activos</option>
+              <option value="Inactivo">Inactivos</option>
             </select>
+            
+            <div className="export-buttons">
+              <select 
+                className="export-select"
+                value={exportFilter}
+                onChange={(e) => setExportFilter(e.target.value)}
+                disabled={isExporting}
+              >
+                <option value="all">Exportar todos</option>
+                <option 
+                  value="filtered" 
+                  disabled={!searchTerm && filtroEstado === 'Todos'}
+                >
+                  Exportar filtrados
+                </option>
+              </select>
+              <button 
+                className="export-btn export-btn-pdf"
+                onClick={handleExportPDF}
+                disabled={isExporting || (exportFilter === 'filtered' && !searchTerm && filtroEstado === 'Todos')}
+                title="Exportar a PDF"
+              >
+                <FaFilePdf /> PDF
+              </button>
+              <button 
+                className="export-btn export-btn-excel"
+                onClick={handleExportExcel}
+                disabled={isExporting || (exportFilter === 'filtered' && !searchTerm && filtroEstado === 'Todos')}
+                title="Exportar a Excel"
+              >
+                <FaFileExcel /> Excel
+              </button>
+            </div>
           </div>
           <button 
             className="btn-nuevo"
