@@ -550,3 +550,123 @@
     font-size: 0.8rem;
   }
 }
+
+/* Estilos para botones de exportación */
+/* Estilos mejorados para los botones de exportación */
+.export-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px 0;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.export-buttons {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.export-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.export-btn-pdf {
+  background: linear-gradient(145deg, #ff5e62, #ff9966);
+  border: 1px solid #ff4757;
+}
+
+.export-btn-pdf:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ff4757, #ff6b6b);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4);
+}
+
+.export-btn-excel {
+  background: linear-gradient(145deg, #00b09b, #96c93d);
+  border: 1px solid #00b894;
+}
+
+.export-btn-excel:hover:not(:disabled) {
+  background: linear-gradient(145deg, #00b894, #55efc4);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+}
+
+.export-btn svg {
+  font-size: 1.2em;
+}
+
+.export-select {
+  padding: 10px 15px;
+  border: 2px solid #e0e6ed;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: white;
+  color: #2d3748;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.export-select:focus {
+  outline: none;
+  border-color: #4fd1c5;
+  box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.2);
+}
+
+.export-select:hover {
+  border-color: #a0aec0;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .export-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .export-buttons {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .export-btn {
+    flex: 1;
+    padding: 12px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .export-select {
+    width: 100%;
+  }
+}

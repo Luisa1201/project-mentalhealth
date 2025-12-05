@@ -10,6 +10,7 @@ import Estudiantes from "./pages/Estudiantes/Estudiantes";
 import Psicoorientadores from "./pages/Psicoorientador/Psicoorientador";
 import SessionHistory from "./pages/SessionHistory/SessionHistory";
 import AdminRoute from "./Components/AdminRoute";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
 
@@ -17,19 +18,43 @@ function App() {
    <BrowserRouter>
    <Routes>
     <Route path="/" element={<LoginPage />} />
-    <Route path='/loginPage' element={<LoginPage/>}></Route>
-    <Route path='/registerForm' element={<RegisterForm/>}></Route>
-    <Route path='/forgotPassword' element={<ForgotPassword/>}></Route>
-    <Route path='/resetPage' element={<ResetPage/>}></Route>
-    <Route path='/dashboard' element={<Dashboard/>}></Route>
-    <Route path='/servicios' element={<Servicios/>}></Route>
-     <Route path='/estudiantes' element={<Estudiantes/>}></Route>
-     <Route path="/psicoorientadores" element={<Psicoorientadores/>}></Route>
-     <Route path="/session-history" element={
-       <AdminRoute>
-         <SessionHistory/>
-       </AdminRoute>
-     }></Route>
+    <Route path="/loginPage" element={<LoginPage/>} />
+    <Route path="/registerForm" element={<RegisterForm/>} />
+    <Route path="/forgotPassword" element={<ForgotPassword/>} />
+    <Route path="/resetPage" element={<ResetPage/>} />
+    
+    {/* Protected Routes */}
+    <Route path="/dashboard" element={
+      <ProtectedRoute>
+        <Dashboard/>
+      </ProtectedRoute>
+    } />
+    
+    <Route path="/servicios" element={
+      <ProtectedRoute>
+        <Servicios/>
+      </ProtectedRoute>
+    } />
+    
+    <Route path="/estudiantes" element={
+      <ProtectedRoute>
+        <Estudiantes/>
+      </ProtectedRoute>
+    } />
+    
+    <Route path="/psicoorientadores" element={
+      <ProtectedRoute>
+        <Psicoorientadores/>
+      </ProtectedRoute>
+    } />
+    
+    <Route path="/session-history" element={
+      <ProtectedRoute>
+        <AdminRoute>
+          <SessionHistory/>
+        </AdminRoute>
+      </ProtectedRoute>
+    } />
    </Routes>
    </BrowserRouter>
   );
