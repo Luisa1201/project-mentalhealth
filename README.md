@@ -20,3 +20,50 @@ If you are developing a production application, we recommend using TypeScript wi
 * npm install react-icons
 * npm install -g firebase-tools  // instalar la herramienta oficial de firebase para poder trabajar con firebase hosting y otros servicios.
 * firebase --version //Revisar la versión de firebase
+
+# Comandos para lograr el despliegue
+
+1. **Iniciar sesión en Firebase**
+   ```bash
+   firebase login
+   ```
+   - Abre una ventana del navegador para autenticarte con tu cuenta de Google
+   - Necesitas permisos de administrador en el proyecto de Firebase
+
+2. **Construir la aplicación para producción**
+   ```bash
+   npm run build
+   ```
+   - Crea una versión optimizada de la aplicación en la carpeta `build/`
+   - Minifica archivos JavaScript y CSS
+   - Optimiza los assets para producción
+
+3. **Eliminar la carpeta build existente (opcional, para limpiar versiones anteriores)**
+   ```bash
+   rm -rf build
+   ```
+   - Elimina la carpeta de compilación anterior
+   - Útil para evitar conflictos con builds anteriores
+
+4. **Inicializar Firebase (solo primera vez)**
+   ```bash
+   firebase init
+   ```
+   - Configura las opciones de despliegue de Firebase
+   - Selecciona las características necesarias (Hosting, Firestore, etc.)
+   - Especifica la carpeta de despliegue (generalmente `build` o `public`)
+
+5. **Desplegar la aplicación**
+   ```bash
+   firebase deploy
+   ```
+   - Sube los archivos a Firebase Hosting
+   - Muestra la URL de producción una vez completado
+   - Las actualizaciones pueden tardar unos minutos en estar disponibles
+
+6. **Comandos rápidos para actualizaciones posteriores**
+   ```bash
+   npm run build && firebase deploy
+   ```
+   - Construye y despliega en un solo paso
+   - Útil después de hacer cambios en el código
